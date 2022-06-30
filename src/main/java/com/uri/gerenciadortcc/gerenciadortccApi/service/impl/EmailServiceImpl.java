@@ -52,7 +52,7 @@ public class EmailServiceImpl implements EmailService {
 
             String localDateTimeFormatado = dataOrientacao.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
 
-            mailAluno.setTo( "romulocado@gmail.com" );
+            mailAluno.setTo( orientacao.getAluno().getEmail() );
             mailAluno.setSubject( "Desmarcar Orientação" );
             mailAluno.setText("Orientação desmarcada no dia " + localDateTimeFormatado + " com o professor " + orientacao.getProfessor().getNome());
             mailSender.send(mailAluno);
