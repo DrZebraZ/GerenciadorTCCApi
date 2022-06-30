@@ -33,7 +33,7 @@ public class TCCServiceImpl implements TCCService {
     private AlunoRepository alunoRepository;
 
     @Override
-    public void salvaTCC(TCCObject tccObject) {
+    public TCCDTO salvaTCC(TCCObject tccObject) {
         TCC tcc = new TCC();
         tcc.setDescricao(tccObject.getDescricao());
         tcc.setTitulo(tccObject.getTitulo());
@@ -48,6 +48,8 @@ public class TCCServiceImpl implements TCCService {
         }
 
         tccRepository.save(tcc);
+
+        return parseTCCDTO(tcc);
 
         ///implementar notificacao
 

@@ -25,7 +25,7 @@ public class Orientacao {
     @Column(name = "TITULO_TCC")
     private String tituloTCC;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "ALUNO_ID")
     private Aluno aluno;
 

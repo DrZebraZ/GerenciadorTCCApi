@@ -31,13 +31,13 @@ public class OrientacaoController {
         return orientacao;
     }
 
-    @GetMapping("/getOrientacao/{alunoId}")
+    @GetMapping("/getOrientacaoAluno/{alunoId}")
     public OrientacaoDTO getOrientacaoPorAluno(@PathVariable("alunoId") String alunoId){
         OrientacaoDTO orientacao = orientacaoService.getOrientacaoPorAluno(Long.valueOf(alunoId));
         return orientacao;
     }
 
-    @GetMapping("/getOrientacao/{professorId}")
+    @GetMapping("/getOrientacaoProfessor/{professorId}")
     public List<OrientacaoDTO> getOrientacaoPorProfessor(@PathVariable("professorId") String professorId){
         List<OrientacaoDTO> orientacoes = orientacaoService.getOrientacaoPorProfessor(Long.valueOf(professorId));
         return orientacoes;

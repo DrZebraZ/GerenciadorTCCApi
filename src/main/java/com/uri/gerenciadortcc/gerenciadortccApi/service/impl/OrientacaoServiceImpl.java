@@ -60,18 +60,21 @@ public class OrientacaoServiceImpl implements OrientacaoService {
         Optional<Orientacao> orientacao = orientacaoRepository.findById(orientacaoId);
         if(orientacao.isPresent()){
             Comentarios comentario = new Comentarios();
-            comentario.setComentario(comentario.getComentario());
+            comentario.setComentario(comentarioObject.getComentario());
             comentario.setDataComentario(LocalDate.now());
-            comentario.setDescricao(comentario.getDescricao());
+            comentario.setDescricao(comentarioObject.getAssunto());
+            comentario.setOrientacao(orientacao.get());
             comentariosRepository.save(comentario);
             Orientacao orientacaoEntity = orientacao.get();
             if(orientacaoEntity.getComentarios() != null){
                 List<Comentarios> comentariosList = orientacaoEntity.getComentarios();
                 comentariosList.add(comentario);
+                orientacaoEntity.setComentarios(comentariosList);
                 orientacaoRepository.save(orientacaoEntity);
             }else {
                 List<Comentarios> comentariosList = new ArrayList<>();
                 comentariosList.add(comentario);
+                orientacaoEntity.setComentarios(comentariosList);
                 orientacaoRepository.save(orientacaoEntity);
             }
         }else{

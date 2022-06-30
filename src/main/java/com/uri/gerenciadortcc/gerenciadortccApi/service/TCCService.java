@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface TCCService {
 
-    public void salvaTCC(TCCObject tccObject);
+    public TCCDTO salvaTCC(TCCObject tccObject);
 
     public TCCDTO getTCC(Long tccId);
 

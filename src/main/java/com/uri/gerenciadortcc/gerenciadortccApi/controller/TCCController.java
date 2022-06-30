@@ -30,9 +30,9 @@ public class TCCController {
     private DocStorageService docStorageService;
 
     @PostMapping("/add")
-    private String addTCC(@RequestBody TCCObject tccObject){
-        tccService.salvaTCC(tccObject);
-        return "TCC adicionado com sucesso";
+    private TCCDTO addTCC(@RequestBody TCCObject tccObject){
+        TCCDTO dto = tccService.salvaTCC(tccObject);
+        return dto;
     }
 
     @GetMapping("/{tccId}/getTCC")
