@@ -1,6 +1,7 @@
 package com.uri.gerenciadortcc.gerenciadortccApi.service;
 
 import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.ComentarioObject;
+import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.DataOrientacaoObject;
 import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.OrientacaoObject;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.ComentariosDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.OrientacaoDTO;
@@ -26,9 +27,9 @@ public interface OrientacaoService {
 
     public void deletaComentario(Long comentarioId);
 
-    public void marcaOrientacao(Long valueOf, LocalDateTime dataOrientacao);
+    public void marcaOrientacao(Long valueOf, DataOrientacaoObject dataOrientacao);
 
-    void atualizaDataOrientacao(Long dataOrientacaoId, LocalDateTime dataOrientacao);
+    void atualizaDataOrientacao(Long dataOrientacaoId, DataOrientacaoObject dataOrientacao);
 
     void deletaDataOrientacao(Long dataOrientacaoId);
 }

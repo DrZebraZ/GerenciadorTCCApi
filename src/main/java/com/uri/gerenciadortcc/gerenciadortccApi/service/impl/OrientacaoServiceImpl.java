@@ -1,6 +1,7 @@
 package com.uri.gerenciadortcc.gerenciadortccApi.service.impl;
 
 import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.ComentarioObject;
+import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.DataOrientacaoObject;
 import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.OrientacaoObject;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.ComentarioDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.ComentariosDTO;
@@ -157,39 +158,42 @@ public class OrientacaoServiceImpl implements OrientacaoService {
     }
 
     @Override
-    public void marcaOrientacao(Long valueOf, LocalDateTime dataOrientacao) {
+    public void marcaOrientacao(Long valueOf, DataOrientacaoObject dataOrientacao) {
         Optional<Orientacao> orientacao = orientacaoRepository.findById(valueOf);
         if(orientacao.isPresent()){
             Orientacao orientacaoEntity = orientacao.get();
             if(orientacaoEntity.getDatasOrientacoes() != null){
                 List<DataOrientacao> dataOrientacaos = orientacaoEntity.getDatasOrientacoes();
                 DataOrientacao novaDataOrientacao =  new DataOrientacao();
-                novaDataOrientacao.setDataOrientacao(dataOrientacao);
+                novaDataOrientacao.setDataOrientacao(dataOrientacao.getData());
+                novaDataOrientacao.setOrientacao(orientacaoEntity);
                 dataOrientacaoRepository.save(novaDataOrientacao);
                 dataOrientacaos.add(novaDataOrientacao);
                 orientacaoRepository.save(orientacaoEntity);
+                emailService.notificaDataOrientacao(orientacaoEntity, dataOrientacao.getData());
             }else {
                 List<DataOrientacao> dataOrientacaos = new ArrayList<>();
                 DataOrientacao novaDataOrientacao =  new DataOrientacao();
-                novaDataOrientacao.setDataOrientacao(dataOrientacao);
+                novaDataOrientacao.setDataOrientacao(dataOrientacao.getData());
+                novaDataOrientacao.setOrientacao(orientacaoEntity);
                 dataOrientacaoRepository.save(novaDataOrientacao);
                 dataOrientacaos.add(novaDataOrientacao);
                 orientacaoRepository.save(orientacaoEntity);
+                emailService.notificaDataOrientacao(orientacaoEntity, dataOrientacao.getData());
             }
-            emailService.notificaDataOrientacao(orientacaoEntity, dataOrientacao);
         }else{
             throw new RuntimeException();
         }
     }
 
     @Override
-    public void atualizaDataOrientacao(Long dataOrientacaoId, LocalDateTime dataOrientacao) {
+    public void atualizaDataOrientacao(Long dataOrientacaoId, DataOrientacaoObject dataOrientacao) {
         Optional<DataOrientacao> dataOrientacaoOptional = dataOrientacaoRepository.findById(dataOrientacaoId);
         if(dataOrientacaoOptional.isPresent()){
             DataOrientacao dataOrientacaoEntity = dataOrientacaoOptional.get();
-            dataOrientacaoEntity.setDataOrientacao(dataOrientacao);
+            dataOrientacaoEntity.setDataOrientacao(dataOrientacao.getData());
             dataOrientacaoRepository.save(dataOrientacaoEntity);
-            emailService.notificaDataOrientacao(dataOrientacaoEntity.getOrientacao(), dataOrientacao);
+            emailService.notificaDataOrientacao(dataOrientacaoEntity.getOrientacao(), dataOrientacao.getData());
         }else {
             throw new RuntimeException();
         }

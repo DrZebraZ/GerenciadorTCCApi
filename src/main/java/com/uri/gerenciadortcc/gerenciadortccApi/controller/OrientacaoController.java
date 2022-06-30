@@ -1,6 +1,7 @@
 package com.uri.gerenciadortcc.gerenciadortccApi.controller;
 
 import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.ComentarioObject;
+import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.DataOrientacaoObject;
 import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.OrientacaoObject;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.ComentariosDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.OrientacaoDTO;
@@ -68,13 +69,13 @@ public class OrientacaoController {
     }
 
     @PutMapping("/put/{orientacaoId}/marcaData")
-    public String marcaDataOrientacao(@PathVariable("orientacaoId") String orientacaoId, @RequestBody LocalDateTime dataOrientacao){
+    public String marcaDataOrientacao(@PathVariable("orientacaoId") String orientacaoId, @RequestBody DataOrientacaoObject dataOrientacao){
         orientacaoService.marcaOrientacao(Long.valueOf(orientacaoId), dataOrientacao);
         return "Data marcada com sucesso";
     }
 
     @PutMapping("/put/{dataOrientacaoId}/atualizaData")
-    public String atualizaDataOrientacao(@PathVariable("dataOrientacaoId") String dataOrientacaoId, @RequestBody LocalDateTime dataOrientacao){
+    public String atualizaDataOrientacao(@PathVariable("dataOrientacaoId") String dataOrientacaoId, @RequestBody DataOrientacaoObject dataOrientacao){
         orientacaoService.atualizaDataOrientacao(Long.valueOf(dataOrientacaoId), dataOrientacao);
         return "Data atualizada com sucesso";
     }
