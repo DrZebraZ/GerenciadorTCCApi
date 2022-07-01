@@ -1,20 +1,28 @@
 package com.uri.gerenciadortcc.gerenciadortccApi.service.impl;
 
-import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.Aluno;
-import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.Doc;
-import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.Professor;
-import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.TCC;
+import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.property.TextAlignment;
+import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.*;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.repository.AlunoRepository;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.repository.DocRepository;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.repository.ProfessorRepository;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.repository.TCCRepository;
 import com.uri.gerenciadortcc.gerenciadortccApi.service.DocStorageService;
+import com.uri.gerenciadortcc.gerenciadortccApi.utils.ReportUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -129,11 +137,11 @@ public class DocStorageServiceImpl implements DocStorageService {
 	}
 
 	@Override
-	public ByteArrayResource getDocumentProfessor(Long professorId) {
+	public Doc getDocumentProfessor(Long professorId) {
 		Optional<Professor> professor = professorRepository.findById(professorId);
 		if(professor.isPresent()){
 			Doc docEntity = professor.get().getArquivo();
-			return new ByteArrayResource(docEntity.getData());
+			return docEntity;
 		}
 		return null;
 	}
@@ -187,11 +195,11 @@ public class DocStorageServiceImpl implements DocStorageService {
 	}
 
 	@Override
-	public ByteArrayResource getDocumentAluno(Long alunoId) {
+	public Doc getDocumentAluno(Long alunoId) {
 		Optional<Aluno> aluno = alunoRepository.findById(alunoId);
 		if(aluno.isPresent()){
 			Doc docEntity = aluno.get().getArquivo();
-			return new ByteArrayResource(docEntity.getData());
+			return docEntity;
 		}
 		return null;
 	}
@@ -206,6 +214,64 @@ public class DocStorageServiceImpl implements DocStorageService {
 			docRepository.deleteById(docEntity.getId());
 		}
 		return null;
+	}
+
+	@Override
+	public ByteArrayInputStream getRelatorioOrientacao(Orientacao orientacao) throws IOException {
+		ReportUtils report = ReportUtils.getInstance();
+		report.setPageSize(PageSize.A4.rotate());
+
+		report.addParagraph(new Paragraph("Relatório de Orientações gerado no dia " + LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+				.setFontSize(28)
+				.setTextAlignment(TextAlignment.CENTER)
+				.setFont(PdfFontFactory.createFont(StandardFonts.COURIER_BOLD))
+		);
+
+		List<DataOrientacao> dataOrientacoes = orientacao.getDatasOrientacoes();
+		if(dataOrientacoes != null && !dataOrientacoes.isEmpty()){
+			report.addNewLine();
+			report.addParagraph(new Paragraph("Lista de Datas de Orientações:")
+					.setFontSize(15)
+					.setTextAlignment(TextAlignment.CENTER)
+					.setFont(PdfFontFactory.createFont(StandardFonts.COURIER_BOLD))
+			);
+			report.addNewLine();
+			report.openTable(1);
+			report.addTableHeader("DATAS DE ORIENTAÇÕES");
+			dataOrientacoes.stream().sorted(Comparator
+					.comparing((DataOrientacao d) -> d.getDataOrientacao())
+					.thenComparing(DataOrientacao::getDataOrientacao))
+					.forEach(data -> {
+						report.addTableColumn(data.getDataOrientacao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+					});
+			report.closeTable();
+		}
+		List<Comentarios> comentarios = orientacao.getComentarios();
+		if(comentarios != null && !comentarios.isEmpty()){
+			report.addNewLine();
+			report.addParagraph(new Paragraph("Lista de Comentários realizados na página:")
+					.setFontSize(15)
+					.setTextAlignment(TextAlignment.CENTER)
+					.setFont(PdfFontFactory.createFont(StandardFonts.COURIER_BOLD))
+			);
+			report.addNewLine();
+			report.openTable(3);
+			report.addTableHeader("DATA", "DESCRIÇÃO", "COMENTÁRIO");
+			comentarios.stream().sorted(Comparator
+					.comparing((Comentarios c) -> c.getDataComentario())
+					.thenComparing(Comentarios::getDataComentario))
+					.forEach(comentario -> {
+						report.addTableColumn(comentario.getDataComentario().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+						report.addTableColumn(comentario.getDescricao());
+						report.addTableColumn(comentario.getComentario());
+					});
+			report.closeTable();
+		}
+
+		report.closeDocument();
+
+		return report.getByteArrayInputStream();
+
 	}
 
 	public Optional<Doc> getFile(Long fileId) {

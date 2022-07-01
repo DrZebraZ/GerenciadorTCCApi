@@ -14,6 +14,8 @@ import com.uri.gerenciadortcc.gerenciadortccApi.service.OrientacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -40,6 +42,9 @@ public class OrientacaoServiceImpl implements OrientacaoService {
 
     @Autowired
     private DataOrientacaoRepository dataOrientacaoRepository;
+
+    @Autowired
+    private DocStorageServiceImpl docStorageService;
 
     @Override
     public void addOrientacao(OrientacaoObject orientacaoObject) {
@@ -206,6 +211,16 @@ public class OrientacaoServiceImpl implements OrientacaoService {
             emailService.notificaDesmarcarDataOrientacao(dataOrientacao.get().getOrientacao(), dataOrientacao.get().getDataOrientacao());
             dataOrientacaoRepository.deleteById(dataOrientacaoId);
         }else{
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public ByteArrayInputStream getRelatorioOrientacao(Long orientacaoId) throws IOException {
+        Optional<Orientacao> orientacao = orientacaoRepository.findById(orientacaoId);
+        if(orientacao.isPresent()){
+            return docStorageService.getRelatorioOrientacao(orientacao.get());
+        }else {
             throw new RuntimeException();
         }
     }

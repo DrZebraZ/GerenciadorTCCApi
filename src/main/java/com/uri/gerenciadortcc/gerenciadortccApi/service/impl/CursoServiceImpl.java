@@ -22,16 +22,16 @@ public class CursoServiceImpl implements CursoService{
 	private CursoRepository repository;
 	
 	@Override
-	public Curso addCurso(Curso curso) {
-		return repository.save(curso);
+	public CursoReturnDTO addCurso(Curso curso) {
+		return parserCursoReturnDTO(repository.save(curso));
 	}
 	
 	@Override
 	public ArrayList<CursoReturnDTO> procuraCursos() {
-		return parserCursoReturnDTO(repository.retornaCursos());
+		return parserListCursoReturnDTO(repository.retornaCursos());
 	}
 	
-	private ArrayList<CursoReturnDTO> parserCursoReturnDTO(ArrayList<Curso> lista) {
+	private ArrayList<CursoReturnDTO> parserListCursoReturnDTO(ArrayList<Curso> lista) {
 		ArrayList<CursoReturnDTO> listaCursos = new ArrayList<CursoReturnDTO>();
 		int tamanho = lista.size();
 		for (int i=0; i < tamanho ; i++) {
@@ -43,4 +43,18 @@ public class CursoServiceImpl implements CursoService{
 		}       
         return listaCursos;
     }
+
+	private CursoReturnDTO parserCursoReturnDTO(Curso curso) {
+
+
+		CursoReturnDTO cursoRetDT = new CursoReturnDTO();
+		cursoRetDT.setIdCurso(curso.getIdCurso());
+		cursoRetDT.setAreacurso(curso.getAreacurso());
+		cursoRetDT.setNome(curso.getNome());
+
+		return cursoRetDT;
+
+
+
+	}
 }

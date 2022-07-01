@@ -12,7 +12,7 @@ public interface TCCService {
 
     public TCCDTO getTCC(Long tccId);
 
-    public void atualizaTCC(Long tccId, TCCObject tccObject);
+    public TCCDTO atualizaTCC(Long tccId, TCCObject tccObject);
 
     public void deleteTCC(Long tccId);
 }

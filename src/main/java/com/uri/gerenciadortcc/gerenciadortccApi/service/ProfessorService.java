@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface ProfessorService {
 
-    Professor salvarProfessor(UsuarioObject usuarioObject);
+    ProfessorCompletoDTO salvarProfessor(UsuarioObject usuarioObject);
 
     //retorna true caso email exista
     boolean validarEmail(String email);
@@ -24,11 +24,11 @@ public interface ProfessorService {
 
     ArrayList<ProfessorDTO> getProfessorPorCurso(Long cursoId);
 
-    void transformaProfessorCoordenador(Long professorId);
+    ProfessorCompletoDTO transformaProfessorCoordenador(Long professorId);
 
     ProfessorDTO getProfessorCoordenador(Long cursoId);
 
-    void adicionaCurso(Long professorId, Long cursoId);
+    ProfessorCompletoDTO adicionaCurso(Long professorId, Long cursoId);
 
     ProfessorCompletoDTO getProfessor(Long professorId);
 }

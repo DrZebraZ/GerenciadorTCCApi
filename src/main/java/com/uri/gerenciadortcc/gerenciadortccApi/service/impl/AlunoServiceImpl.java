@@ -1,7 +1,9 @@
 package com.uri.gerenciadortcc.gerenciadortccApi.service.impl;
 
 import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.UsuarioObject;
+import com.uri.gerenciadortcc.gerenciadortccApi.dto.AlunoDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.AlunoLoginDTO;
+import com.uri.gerenciadortcc.gerenciadortccApi.dto.CursoReturnDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.TCCAlunoDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.exception.ErroAutenticacao;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.Aluno;
@@ -15,6 +17,9 @@ import com.uri.gerenciadortcc.gerenciadortccApi.service.NotificacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,7 +38,7 @@ public class AlunoServiceImpl implements AlunoService {
     private DocStorageService docStorageService;
 
     @Override
-    public Aluno salvarAluno(UsuarioObject usuarioObject) {
+    public AlunoLoginDTO salvarAluno(UsuarioObject usuarioObject) {
         Boolean validou = validarCredenciaisADDUsuario(usuarioObject);
         if (validou) {
             Aluno aluno = new Aluno();
@@ -52,7 +57,7 @@ public class AlunoServiceImpl implements AlunoService {
                 docStorageService.saveFileAluno(alunoEntity.getId(), usuarioObject.getFoto());
             }
             notificacaoService.salvarNotificacaoNovoUsuarioAluno(aluno.getId());
-            return aluno;
+            return parserAlunoLoginDTO(aluno);
         }else return null;
     }
 
@@ -64,6 +69,32 @@ public class AlunoServiceImpl implements AlunoService {
            return parserAlunoLoginDTO(aluno.get());
         }
         throw new RuntimeException();
+    }
+
+    @Override
+    public AlunoLoginDTO getAluno(Long alunoId) {
+        Optional<Aluno> aluno = repository.findById(alunoId);
+        if(aluno.isPresent()){
+            return parserAlunoLoginDTO(aluno.get());
+        }else{
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public ArrayList<AlunoDTO> getAlunoPorCurso(Long cursoId) {
+        ArrayList<AlunoDTO> alunos = new ArrayList<>();
+        List<Aluno> alunoList = repository.findyByIdCurso(cursoId);
+        if(alunoList != null && !alunoList.isEmpty()){
+            for(Aluno aluno: alunoList){
+                AlunoDTO alunoDTO = new AlunoDTO();
+                alunoDTO.setId(aluno.getId());
+                alunoDTO.setNome(aluno.getNome());
+                alunos.add(alunoDTO);
+            }
+            alunos.sort(Comparator.comparing(AlunoDTO::getNome));
+        }
+        return alunos;
     }
 
     @Override

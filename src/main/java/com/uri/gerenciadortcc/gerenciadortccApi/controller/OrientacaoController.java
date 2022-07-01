@@ -7,9 +7,14 @@ import com.uri.gerenciadortcc.gerenciadortccApi.dto.ComentariosDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.OrientacaoDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.service.OrientacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.io.IOException;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -84,6 +89,21 @@ public class OrientacaoController {
     public String deletaDataOrientacao(@PathVariable("dataOrientacaoId") String dataOrientacaoId){
         orientacaoService.deletaDataOrientacao(Long.valueOf(dataOrientacaoId));
         return "Data deletada com sucesso";
+    }
+
+    @GetMapping("{orientacaoId}/getRelatorio")
+    public ResponseEntity<InputStreamResource> getRelatorioOrientacao(@PathVariable("orientacaoId") String orientacaoId) throws IOException {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "inline; filename=relatorio.pdf");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(new InputStreamResource(orientacaoService.getRelatorioOrientacao(Long.valueOf(orientacaoId))));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 }

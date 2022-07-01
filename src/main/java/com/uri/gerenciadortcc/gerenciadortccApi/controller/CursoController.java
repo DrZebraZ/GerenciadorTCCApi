@@ -19,9 +19,8 @@ public class CursoController {
 	private CursoService cursoservice;
 		
 	@PostMapping("/add")
-	public String add(@RequestBody Curso curso) {
-		cursoservice.addCurso(curso);
-		return "Curso Adicionado com Sucesso";
+	public CursoReturnDTO add(@RequestBody Curso curso) {
+		return cursoservice.addCurso(curso);
 	}
 
 	@GetMapping("/getCursos")

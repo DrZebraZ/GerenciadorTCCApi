@@ -11,7 +11,7 @@ public interface CursoService {
 	
 	ArrayList<CursoReturnDTO> procuraCursos();
 
-	Curso addCurso(Curso curso);
+	CursoReturnDTO addCurso(Curso curso);
 	
 	
 	

@@ -42,9 +42,8 @@ public class TCCController {
     }
 
     @PutMapping("/{tccId}/update")
-    private String putTCC(@PathVariable("tccId")String tccId, @RequestBody TCCObject tccObject) {
-        tccService.atualizaTCC(Long.valueOf(tccId), tccObject);
-        return "TCC atualizado com Sucesso";
+    private TCCDTO putTCC(@PathVariable("tccId")String tccId, @RequestBody TCCObject tccObject) {
+        return tccService.atualizaTCC(Long.valueOf(tccId), tccObject);
     }
 
     @DeleteMapping("/{tccId}/delete")
@@ -54,9 +53,12 @@ public class TCCController {
     }
 
     @PostMapping("/add/{tccId}/document")
-    private String salvaDocumento(@PathVariable("tccId") String tccId, @RequestBody MultipartFile file){
-        docStorageService.saveFile(Long.valueOf(tccId), file);
-        return "Documento adicionado com sucesso";
+    private ResponseEntity<ByteArrayResource> salvaDocumento(@PathVariable("tccId") String tccId, @RequestBody MultipartFile file){
+        Doc doc = docStorageService.saveFile(Long.valueOf(tccId), file);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(doc.getDocType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment:filename=\""+doc.getDocName()+"\"")
+                .body(new ByteArrayResource(doc.getData()));
     }
 
     @GetMapping("/get/{tccId}/document")
@@ -69,9 +71,12 @@ public class TCCController {
     }
 
     @PutMapping("/update/{tccId}/document")
-    private String atualizaDocumento(@PathVariable("tccId") String tccId, @RequestBody MultipartFile file){
-        docStorageService.atualiza(Long.valueOf(tccId), file);
-        return "Documento atualizado com sucesso";
+    private ResponseEntity<ByteArrayResource> atualizaDocumento(@PathVariable("tccId") String tccId, @RequestBody MultipartFile file){
+        Doc doc = docStorageService.atualiza(Long.valueOf(tccId), file);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(doc.getDocType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment:filename=\""+doc.getDocName()+"\"")
+                .body(new ByteArrayResource(doc.getData()));
     }
 
     @DeleteMapping("/delete/{tccId}/document")

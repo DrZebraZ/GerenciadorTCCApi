@@ -2,16 +2,24 @@ package com.uri.gerenciadortcc.gerenciadortccApi.controller;
 
 import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.UsuarioObject;
 import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.loginObject;
+import com.uri.gerenciadortcc.gerenciadortccApi.dto.AlunoDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.AlunoLoginDTO;
+import com.uri.gerenciadortcc.gerenciadortccApi.dto.ProfessorCompletoDTO;
+import com.uri.gerenciadortcc.gerenciadortccApi.dto.ProfessorDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.Aluno;
+import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.Doc;
 import com.uri.gerenciadortcc.gerenciadortccApi.service.AlunoService;
 import com.uri.gerenciadortcc.gerenciadortccApi.service.DocStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -31,26 +39,47 @@ public class AlunoController {
     }
 
     @PostMapping("/add")
-    public String add(@RequestBody @Valid UsuarioObject usuarioObject) {
-        alunoService.salvarAluno(usuarioObject);
-        return "Aluno Adicionado com Sucesso";
+    public AlunoLoginDTO add(@RequestBody @Valid UsuarioObject usuarioObject) {
+        return alunoService.salvarAluno(usuarioObject);
+    }
+
+    @GetMapping("/getAluno/{alunoId}")
+    public AlunoLoginDTO getProfessor(@PathVariable("alunoId") String alunoId){
+        AlunoLoginDTO professor = alunoService.getAluno(Long.valueOf(alunoId));
+        return professor;
+    }
+
+    @GetMapping("/{cursoId}/getProfessor")
+    public ArrayList<AlunoDTO> getNamoProfessorPorCurso(@PathVariable("cursoId") String cursoId){
+        return alunoService.getAlunoPorCurso(Long.valueOf(cursoId));
     }
 
     @PostMapping("/add/{alunoId}/document")
-    private String salvaDocumento(@PathVariable("alunoId") String alunoId, @RequestBody MultipartFile file){
-        docStorageService.saveFileAluno(Long.valueOf(alunoId), file);
-        return "Documento adicionado com sucesso";
+    private ResponseEntity<ByteArrayResource> salvaDocumento(@PathVariable("alunoId") String alunoId, @RequestBody MultipartFile file){
+        Doc doc = docStorageService.saveFileAluno(Long.valueOf(alunoId), file);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(doc.getDocType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment:filename=\""+doc.getDocName()+"\"")
+                .body(new ByteArrayResource(doc.getData()));
     }
 
     @GetMapping("/get/{alunoId}/document")
-    private ByteArrayResource salvaDocumento(@PathVariable("alunoId") String alunoId){
-        return docStorageService.getDocumentAluno(Long.valueOf(alunoId));
+    private ResponseEntity<ByteArrayResource> salvaDocumento(@PathVariable("alunoId") String alunoId){
+        Doc doc =  docStorageService.getDocumentAluno(Long.valueOf(alunoId));
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(doc.getDocType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment:filename=\""+doc.getDocName()+"\"")
+                .body(new ByteArrayResource(doc.getData()));
     }
 
     @PutMapping("/update/{alunoId}/document")
-    private String atualizaDocumento(@PathVariable("alunoId") String alunoId, @RequestBody MultipartFile file){
-        docStorageService.atualizaDocAluno(Long.valueOf(alunoId), file);
-        return "Documento atualizado com sucesso";
+    private ResponseEntity<ByteArrayResource> atualizaDocumento(@PathVariable("alunoId") String alunoId, @RequestBody MultipartFile file){
+        Doc doc = docStorageService.atualizaDocAluno(Long.valueOf(alunoId), file);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(doc.getDocType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment:filename=\""+doc.getDocName()+"\"")
+                .body(new ByteArrayResource(doc.getData()));
     }
 
     @DeleteMapping("/delete/{alunoId}/document")

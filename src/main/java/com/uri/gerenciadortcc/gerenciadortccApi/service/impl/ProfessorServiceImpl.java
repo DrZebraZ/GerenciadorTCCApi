@@ -6,6 +6,7 @@ import com.uri.gerenciadortcc.gerenciadortccApi.dto.ProfessorCompletoDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.ProfessorDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.TCCProfessorDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.exception.ErroAutenticacao;
+import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.Aluno;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.Curso;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.Professor;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.TCC;
@@ -18,9 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -39,7 +38,7 @@ public class ProfessorServiceImpl implements ProfessorService {
     private DocStorageServiceImpl docStorageService;
 
     @Override
-    public Professor salvarProfessor(UsuarioObject usuarioObject) {
+    public ProfessorCompletoDTO salvarProfessor(UsuarioObject usuarioObject) {
         Boolean validou = validarCredenciaisADDUsuario(usuarioObject);
         if (validou) {
             Professor professor = new Professor();
@@ -60,8 +59,10 @@ public class ProfessorServiceImpl implements ProfessorService {
                 docStorageService.saveFileProfessor(professorEntity.getId(), usuarioObject.getFoto());
             }
             notificacaoService.salvarNotificacaoNovoUsuarioProfessor(professor.getId());
-            return professor;
-        }else return null;
+            return parseProfessorCompletoDTO(professor);
+        }else {
+           throw  new RuntimeException();
+        }
     }
 
     @Override
@@ -77,7 +78,6 @@ public class ProfessorServiceImpl implements ProfessorService {
     @Override
     public ArrayList<ProfessorDTO> getProfessorPorCurso(Long cursoId) {
     	ArrayList<Professor> lista = repository.getProfessorPorIDCurso(cursoId);
-    	log.info("AQUIIIII {}", lista.size());
     	ArrayList<ProfessorDTO> listaRetorno = new ArrayList<ProfessorDTO>();
     	for (Professor professor: lista) {
     		ProfessorDTO prof = new ProfessorDTO();
@@ -85,17 +85,19 @@ public class ProfessorServiceImpl implements ProfessorService {
     		prof.setNome(professor.getNome());
     		listaRetorno.add(prof);
     	}
+        listaRetorno.sort(Comparator.comparing(ProfessorDTO::getNome));
         return listaRetorno;
     }
 
     @Override
-    public void transformaProfessorCoordenador(Long professorId) {
+    public ProfessorCompletoDTO transformaProfessorCoordenador(Long professorId) {
         Optional<Professor> professor = repository.findById(professorId);
         if(professor.isPresent()){
             Professor professorEntity = professor.get();
             professorEntity.setCoordenador(true);
-            repository.save(professorEntity);
+            return parseProfessorCompletoDTO(repository.save(professorEntity));
         }
+        throw new RuntimeException();
     }
 
     @Override
@@ -113,14 +115,14 @@ public class ProfessorServiceImpl implements ProfessorService {
     }
 
     @Override
-    public void adicionaCurso(Long professorId, Long cursoId) {
+    public ProfessorCompletoDTO adicionaCurso(Long professorId, Long cursoId) {
         Optional<Professor> professor = repository.findById(professorId);
         Optional<Curso> curso = cursoRepository.findById(cursoId);
         if(professor.isPresent() && curso.isPresent()){
             List<Curso> cursos = professor.get().getCursos();
             cursos.add(curso.get());
             professor.get().setCursos(cursos);
-            repository.save(professor.get());
+            return parseProfessorCompletoDTO(repository.save(professor.get()));
         }else {
             throw new RuntimeException();
         }
@@ -181,6 +183,7 @@ public class ProfessorServiceImpl implements ProfessorService {
                 tccProfessorDTO.setNomeAluno(tcc.getAluno().getNome());
                 tccProfessorDTOS.add(tccProfessorDTO);
             }
+            tccProfessorDTOS.sort(Comparator.comparing(TCCProfessorDTO::getNomeAluno));
             professorCompletoDTO.setTccs(tccProfessorDTOS);
         }
         if(professor.getCursos() != null && !professor.getCursos().isEmpty()){
@@ -192,6 +195,7 @@ public class ProfessorServiceImpl implements ProfessorService {
                 cursoReturnDTO.setAreacurso(curso.getAreacurso());
                 cursoReturnDTOS.add(cursoReturnDTO);
             }
+            cursoReturnDTOS.sort(Comparator.comparing(CursoReturnDTO::getNome));
             professorCompletoDTO.setCursos(cursoReturnDTOS);
         }
         return professorCompletoDTO;

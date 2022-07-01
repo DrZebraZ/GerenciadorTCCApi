@@ -4,11 +4,15 @@ import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.UsuarioObject
 import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.loginObject;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.ProfessorCompletoDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.ProfessorDTO;
+import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.Doc;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.Professor;
 import com.uri.gerenciadortcc.gerenciadortccApi.service.DocStorageService;
 import com.uri.gerenciadortcc.gerenciadortccApi.service.ProfessorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,7 +33,7 @@ public class ProfessorController {
     @Autowired
     private DocStorageService docStorageService;
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ProfessorCompletoDTO executaLogin(@RequestBody loginObject login){
         ProfessorCompletoDTO professor = professorService.Login(login.getEmail(), login.getSenha());
         return professor;
@@ -42,9 +46,8 @@ public class ProfessorController {
     }
 
     @PostMapping("/add")
-    public String add(@RequestBody @Valid UsuarioObject usuarioObject) {
-        professorService.salvarProfessor(usuarioObject);
-        return "Professor Adicionado com Sucesso";
+    public ProfessorCompletoDTO add(@RequestBody @Valid UsuarioObject usuarioObject) {
+        return professorService.salvarProfessor(usuarioObject);
     }
 
     @GetMapping("/{cursoId}/getProfessor")
@@ -53,15 +56,13 @@ public class ProfessorController {
     }
 
     @PutMapping("/{professorId}/coordenador")
-    public String transformaProfessorCoordenador(@PathVariable("professorId") String professorId){
-        professorService.transformaProfessorCoordenador(Long.valueOf(professorId));
-        return "Coordenador setado com sucesso";
+    public ProfessorCompletoDTO transformaProfessorCoordenador(@PathVariable("professorId") String professorId){
+        return professorService.transformaProfessorCoordenador(Long.valueOf(professorId));
     }
 
     @PutMapping("/{professorId}/cursos/{cursoId}")
-    public String adicionaCurso(@PathVariable("professorId") String professorId, @PathVariable("cursoId") String cursoId){
-        professorService.adicionaCurso(Long.valueOf(professorId), Long.valueOf(cursoId));
-        return "Curso adicionado ao Professor";
+    public ProfessorCompletoDTO adicionaCurso(@PathVariable("professorId") String professorId, @PathVariable("cursoId") String cursoId){
+        return professorService.adicionaCurso(Long.valueOf(professorId), Long.valueOf(cursoId));
     }
 
     @GetMapping("/{cursoId}/coordenador")
@@ -70,20 +71,30 @@ public class ProfessorController {
     }
 
     @PostMapping("/add/{professorId}/document")
-    private String salvaDocumento(@PathVariable("professorId") String professorId, @RequestBody MultipartFile file){
-        docStorageService.saveFileProfessor(Long.valueOf(professorId), file);
-        return "Documento adicionado com sucesso";
+    private ResponseEntity<ByteArrayResource> salvaDocumento(@PathVariable("professorId") String professorId, @RequestBody MultipartFile file){
+        Doc doc = docStorageService.saveFileProfessor(Long.valueOf(professorId), file);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(doc.getDocType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment:filename=\""+doc.getDocName()+"\"")
+                .body(new ByteArrayResource(doc.getData()));
     }
 
     @GetMapping("/get/{professorId}/document")
-    private ByteArrayResource salvaDocumento(@PathVariable("professorId") String professorId){
-        return docStorageService.getDocumentProfessor(Long.valueOf(professorId));
+    private ResponseEntity<ByteArrayResource> salvaDocumento(@PathVariable("professorId") String professorId){
+        Doc doc =  docStorageService.getDocumentProfessor(Long.valueOf(professorId));
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(doc.getDocType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment:filename=\""+doc.getDocName()+"\"")
+                .body(new ByteArrayResource(doc.getData()));
     }
 
     @PutMapping("/update/{professorId}/document")
-    private String atualizaDocumento(@PathVariable("professorId") String professorId, @RequestBody MultipartFile file){
-        docStorageService.atualizaDocProfessor(Long.valueOf(professorId), file);
-        return "Documento atualizado com sucesso";
+    private ResponseEntity<ByteArrayResource> atualizaDocumento(@PathVariable("professorId") String professorId, @RequestBody MultipartFile file){
+        Doc doc = docStorageService.atualizaDocProfessor(Long.valueOf(professorId), file);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(doc.getDocType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment:filename=\""+doc.getDocName()+"\"")
+                .body(new ByteArrayResource(doc.getData()));
     }
 
     @PutMapping("/delete/{professorId}/document")

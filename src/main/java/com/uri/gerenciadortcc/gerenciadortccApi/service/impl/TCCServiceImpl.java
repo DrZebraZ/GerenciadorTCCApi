@@ -67,7 +67,7 @@ public class TCCServiceImpl implements TCCService {
 
 
     @Override
-    public void atualizaTCC(Long tccId, TCCObject tccObject) {
+    public TCCDTO atualizaTCC(Long tccId, TCCObject tccObject) {
         Optional<TCC> tcc = tccRepository.findById(tccId);
         if(tcc.isPresent()){
             TCC tccAtualizado = tcc.get();
@@ -82,8 +82,9 @@ public class TCCServiceImpl implements TCCService {
                 tccAtualizado.setAluno(aluno.get());
             }
 
-            tccRepository.save(tccAtualizado);
+            return parseTCCDTO(tccRepository.save(tccAtualizado));
         }
+        throw new RuntimeException();
     }
 
     @Override

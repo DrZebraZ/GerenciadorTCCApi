@@ -6,6 +6,8 @@ import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.OrientacaoObj
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.ComentariosDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.OrientacaoDTO;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,4 +34,6 @@ public interface OrientacaoService {
     void atualizaDataOrientacao(Long dataOrientacaoId, DataOrientacaoObject dataOrientacao);
 
     void deletaDataOrientacao(Long dataOrientacaoId);
+
+    public ByteArrayInputStream getRelatorioOrientacao(Long orientacaoId) throws IOException;
 }

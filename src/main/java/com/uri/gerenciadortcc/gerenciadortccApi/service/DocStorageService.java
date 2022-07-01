@@ -1,8 +1,12 @@
 package com.uri.gerenciadortcc.gerenciadortccApi.service;
 
 import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.Doc;
+import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.Orientacao;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 public interface DocStorageService {
 
@@ -18,7 +22,7 @@ public interface DocStorageService {
 
     public Doc atualizaDocProfessor(Long professorId, MultipartFile file);
 
-    public ByteArrayResource getDocumentProfessor(Long professorId);
+    public Doc getDocumentProfessor(Long professorId);
 
     public Doc deleteDocProfessor(Long professorId);
 
@@ -26,7 +30,9 @@ public interface DocStorageService {
 
     public Doc atualizaDocAluno(Long alunoId, MultipartFile file);
 
-    public ByteArrayResource getDocumentAluno(Long alunoId);
+    public Doc getDocumentAluno(Long alunoId);
 
     public Doc deleteDocAluno(Long alunoId);
+
+    public ByteArrayInputStream getRelatorioOrientacao(Orientacao orientacao) throws IOException;
 }
