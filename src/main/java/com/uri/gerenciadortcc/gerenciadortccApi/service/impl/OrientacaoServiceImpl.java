@@ -11,6 +11,7 @@ import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.*;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.repository.*;
 import com.uri.gerenciadortcc.gerenciadortccApi.service.EmailService;
 import com.uri.gerenciadortcc.gerenciadortccApi.service.OrientacaoService;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +48,7 @@ public class OrientacaoServiceImpl implements OrientacaoService {
     private DocStorageServiceImpl docStorageService;
 
     @Override
-    public void addOrientacao(OrientacaoObject orientacaoObject) {
+    public OrientacaoDTO addOrientacao(OrientacaoObject orientacaoObject) {
         Optional<Aluno> aluno = alunoRepository.findById(orientacaoObject.getAlunoId());
         Optional<Professor> professor = professorRepository.findById(orientacaoObject.getProfessorId());
         if(aluno.isPresent() && professor.isPresent()){
@@ -55,14 +56,14 @@ public class OrientacaoServiceImpl implements OrientacaoService {
             orientacao.setTituloTCC(aluno.get().getTcc().getDescricao());
             orientacao.setAluno(aluno.get());
             orientacao.setProfessor(professor.get());
-            orientacaoRepository.save(orientacao);
+            return parseOrientacaoDTO(orientacaoRepository.save(orientacao));
         }else {
             throw new RuntimeException();
         }
     }
 
     @Override
-    public void addComentario(Long orientacaoId, ComentarioObject comentarioObject) {
+    public OrientacaoDTO addComentario(Long orientacaoId, ComentarioObject comentarioObject) {
         Optional<Orientacao> orientacao = orientacaoRepository.findById(orientacaoId);
         if(orientacao.isPresent()){
             Comentarios comentario = new Comentarios();
@@ -76,12 +77,12 @@ public class OrientacaoServiceImpl implements OrientacaoService {
                 List<Comentarios> comentariosList = orientacaoEntity.getComentarios();
                 comentariosList.add(comentario);
                 orientacaoEntity.setComentarios(comentariosList);
-                orientacaoRepository.save(orientacaoEntity);
+                return parseOrientacaoDTO(orientacaoRepository.save(orientacaoEntity));
             }else {
                 List<Comentarios> comentariosList = new ArrayList<>();
                 comentariosList.add(comentario);
                 orientacaoEntity.setComentarios(comentariosList);
-                orientacaoRepository.save(orientacaoEntity);
+                return parseOrientacaoDTO(orientacaoRepository.save(orientacaoEntity));
             }
         }else{
             throw new RuntimeException();
@@ -144,7 +145,7 @@ public class OrientacaoServiceImpl implements OrientacaoService {
     }
 
     @Override
-    public void atualizaComentario(Long comentarioId, ComentarioObject comentarioObject) {
+    public OrientacaoDTO atualizaComentario(Long comentarioId, ComentarioObject comentarioObject) {
         Optional<Comentarios> comentarios = comentariosRepository.findById(comentarioId);
         if(comentarios.isPresent()){
             Comentarios comentario = comentarios.get();
@@ -152,6 +153,7 @@ public class OrientacaoServiceImpl implements OrientacaoService {
             comentario.setDataComentario(LocalDate.now());
             comentario.setDescricao(comentario.getDescricao());
             comentariosRepository.save(comentario);
+            return parseOrientacaoDTO(comentario.getOrientacao());
         }else {
             throw new RuntimeException();
         }
@@ -163,7 +165,7 @@ public class OrientacaoServiceImpl implements OrientacaoService {
     }
 
     @Override
-    public void marcaOrientacao(Long valueOf, DataOrientacaoObject dataOrientacao) {
+    public OrientacaoDTO marcaOrientacao(Long valueOf, DataOrientacaoObject dataOrientacao) {
         Optional<Orientacao> orientacao = orientacaoRepository.findById(valueOf);
         if(orientacao.isPresent()){
             Orientacao orientacaoEntity = orientacao.get();
@@ -174,8 +176,8 @@ public class OrientacaoServiceImpl implements OrientacaoService {
                 novaDataOrientacao.setOrientacao(orientacaoEntity);
                 dataOrientacaoRepository.save(novaDataOrientacao);
                 dataOrientacaos.add(novaDataOrientacao);
-                orientacaoRepository.save(orientacaoEntity);
                 emailService.notificaDataOrientacao(orientacaoEntity, dataOrientacao.getData());
+                return parseOrientacaoDTO(orientacaoRepository.save(orientacaoEntity));
             }else {
                 List<DataOrientacao> dataOrientacaos = new ArrayList<>();
                 DataOrientacao novaDataOrientacao =  new DataOrientacao();
@@ -183,8 +185,8 @@ public class OrientacaoServiceImpl implements OrientacaoService {
                 novaDataOrientacao.setOrientacao(orientacaoEntity);
                 dataOrientacaoRepository.save(novaDataOrientacao);
                 dataOrientacaos.add(novaDataOrientacao);
-                orientacaoRepository.save(orientacaoEntity);
                 emailService.notificaDataOrientacao(orientacaoEntity, dataOrientacao.getData());
+                return parseOrientacaoDTO(orientacaoRepository.save(orientacaoEntity));
             }
         }else{
             throw new RuntimeException();
@@ -192,13 +194,14 @@ public class OrientacaoServiceImpl implements OrientacaoService {
     }
 
     @Override
-    public void atualizaDataOrientacao(Long dataOrientacaoId, DataOrientacaoObject dataOrientacao) {
+    public OrientacaoDTO atualizaDataOrientacao(Long dataOrientacaoId, DataOrientacaoObject dataOrientacao) {
         Optional<DataOrientacao> dataOrientacaoOptional = dataOrientacaoRepository.findById(dataOrientacaoId);
         if(dataOrientacaoOptional.isPresent()){
             DataOrientacao dataOrientacaoEntity = dataOrientacaoOptional.get();
             dataOrientacaoEntity.setDataOrientacao(dataOrientacao.getData());
             dataOrientacaoRepository.save(dataOrientacaoEntity);
             emailService.notificaDataOrientacao(dataOrientacaoEntity.getOrientacao(), dataOrientacao.getData());
+            return parseOrientacaoDTO(dataOrientacaoEntity.getOrientacao());
         }else {
             throw new RuntimeException();
         }

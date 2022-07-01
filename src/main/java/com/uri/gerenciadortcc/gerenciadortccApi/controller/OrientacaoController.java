@@ -26,9 +26,8 @@ public class OrientacaoController {
     private OrientacaoService orientacaoService;
 
     @PostMapping("/add")
-    public String add(@RequestBody OrientacaoObject orientacao) {
-        orientacaoService.addOrientacao(orientacao);
-        return "Orientacao Adicionada com Sucesso";
+    public OrientacaoDTO add(@RequestBody OrientacaoObject orientacao) {
+        return orientacaoService.addOrientacao(orientacao);
     }
 
     @GetMapping("/getOrientacao/{orientacaoId}")
@@ -50,9 +49,8 @@ public class OrientacaoController {
     }
 
     @PostMapping("/add/{orientacaoId}/comentario")
-    public String addComentario(@PathVariable("orientacaoId") String orientacaoId, @RequestBody ComentarioObject comentario){
-        orientacaoService.addComentario(Long.valueOf(orientacaoId), comentario);
-        return "Comentario adicionado com sucesso";
+    public OrientacaoDTO addComentario(@PathVariable("orientacaoId") String orientacaoId, @RequestBody ComentarioObject comentario){
+        return orientacaoService.addComentario(Long.valueOf(orientacaoId), comentario);
     }
 
     @GetMapping("/get/{orientacaoId}/comentario")
@@ -62,9 +60,8 @@ public class OrientacaoController {
     }
 
     @PutMapping("/put/{comentarioId}/comentario")
-    public String atualizaComentario(@PathVariable("comentarioId") String comentarioId, @RequestBody ComentarioObject comentario){
-        orientacaoService.atualizaComentario(Long.valueOf(comentarioId), comentario);
-        return "Comentario atualizado com sucesso";
+    public OrientacaoDTO atualizaComentario(@PathVariable("comentarioId") String comentarioId, @RequestBody ComentarioObject comentario){
+        return orientacaoService.atualizaComentario(Long.valueOf(comentarioId), comentario);
     }
 
     @DeleteMapping("/delete/{comentarioId}/comentario")
@@ -74,15 +71,13 @@ public class OrientacaoController {
     }
 
     @PutMapping("/put/{orientacaoId}/marcaData")
-    public String marcaDataOrientacao(@PathVariable("orientacaoId") String orientacaoId, @RequestBody DataOrientacaoObject dataOrientacao){
-        orientacaoService.marcaOrientacao(Long.valueOf(orientacaoId), dataOrientacao);
-        return "Data marcada com sucesso";
+    public OrientacaoDTO marcaDataOrientacao(@PathVariable("orientacaoId") String orientacaoId, @RequestBody DataOrientacaoObject dataOrientacao){
+        return orientacaoService.marcaOrientacao(Long.valueOf(orientacaoId), dataOrientacao);
     }
 
     @PutMapping("/put/{dataOrientacaoId}/atualizaData")
-    public String atualizaDataOrientacao(@PathVariable("dataOrientacaoId") String dataOrientacaoId, @RequestBody DataOrientacaoObject dataOrientacao){
-        orientacaoService.atualizaDataOrientacao(Long.valueOf(dataOrientacaoId), dataOrientacao);
-        return "Data atualizada com sucesso";
+    public OrientacaoDTO atualizaDataOrientacao(@PathVariable("dataOrientacaoId") String dataOrientacaoId, @RequestBody DataOrientacaoObject dataOrientacao){
+       return orientacaoService.atualizaDataOrientacao(Long.valueOf(dataOrientacaoId), dataOrientacao);
     }
 
     @DeleteMapping("/delete/{dataOrientacaoId}")

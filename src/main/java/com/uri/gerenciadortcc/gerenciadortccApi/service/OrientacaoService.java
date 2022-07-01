@@ -13,9 +13,9 @@ import java.util.List;
 
 public interface OrientacaoService {
 
-    public void addOrientacao(OrientacaoObject orientacaoObject);
+    public OrientacaoDTO addOrientacao(OrientacaoObject orientacaoObject);
 
-    public void addComentario(Long orientacaoId, ComentarioObject comentarioObject);
+    public OrientacaoDTO addComentario(Long orientacaoId, ComentarioObject comentarioObject);
 
     public ComentariosDTO getComentarios(Long orientacaoId);
 
@@ -25,13 +25,13 @@ public interface OrientacaoService {
 
     public List<OrientacaoDTO> getOrientacaoPorProfessor(Long professorId);
 
-    public void atualizaComentario(Long comentarioId, ComentarioObject comentarioObject);
+    public OrientacaoDTO atualizaComentario(Long comentarioId, ComentarioObject comentarioObject);
 
     public void deletaComentario(Long comentarioId);
 
-    public void marcaOrientacao(Long valueOf, DataOrientacaoObject dataOrientacao);
+    public OrientacaoDTO marcaOrientacao(Long valueOf, DataOrientacaoObject dataOrientacao);
 
-    void atualizaDataOrientacao(Long dataOrientacaoId, DataOrientacaoObject dataOrientacao);
+    OrientacaoDTO atualizaDataOrientacao(Long dataOrientacaoId, DataOrientacaoObject dataOrientacao);
 
     void deletaDataOrientacao(Long dataOrientacaoId);
 
