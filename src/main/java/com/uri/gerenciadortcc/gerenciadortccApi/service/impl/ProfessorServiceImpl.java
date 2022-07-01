@@ -59,7 +59,7 @@ public class ProfessorServiceImpl implements ProfessorService {
                 docStorageService.saveFileProfessor(professorEntity.getId(), usuarioObject.getFoto());
             }
             notificacaoService.salvarNotificacaoNovoUsuarioProfessor(professor.getId());
-            return parseProfessorCompletoDTO(professor);
+            return parseProfessorCompletoDTO(professorEntity);
         }else {
            throw  new RuntimeException();
         }
@@ -177,7 +177,7 @@ public class ProfessorServiceImpl implements ProfessorService {
             List<TCCProfessorDTO> tccProfessorDTOS = new ArrayList<>();
             for(TCC tcc : professor.getOrientacoes()){
                 TCCProfessorDTO tccProfessorDTO = new TCCProfessorDTO();
-                tccProfessorDTO.setIdTCC(tcc.getIdTCC());
+                tccProfessorDTO.setIdTCC(tcc.getId());
                 tccProfessorDTO.setDescricao(tcc.getDescricao());
                 tccProfessorDTO.setIdAluno(tcc.getAluno().getId());
                 tccProfessorDTO.setNomeAluno(tcc.getAluno().getNome());

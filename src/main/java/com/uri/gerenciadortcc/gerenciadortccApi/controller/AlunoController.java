@@ -64,7 +64,7 @@ public class AlunoController {
     }
 
     @GetMapping("/get/{alunoId}/document")
-    private ResponseEntity<ByteArrayResource> salvaDocumento(@PathVariable("alunoId") String alunoId){
+    private ResponseEntity<ByteArrayResource> getDocumento(@PathVariable("alunoId") String alunoId){
         Doc doc =  docStorageService.getDocumentAluno(Long.valueOf(alunoId));
 
         return ResponseEntity.ok()

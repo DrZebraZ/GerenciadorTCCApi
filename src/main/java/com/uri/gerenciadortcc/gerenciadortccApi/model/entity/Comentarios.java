@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comentarios", schema="mydb")
@@ -28,7 +29,7 @@ public class Comentarios {
     private String comentario;
 
     @Column(name = "DATA_COMENTARIO")
-    private LocalDate dataComentario;
+    private LocalDateTime dataComentario;
 
     @ManyToOne
     @JoinColumn(name = "ORIENTACAO_ID")

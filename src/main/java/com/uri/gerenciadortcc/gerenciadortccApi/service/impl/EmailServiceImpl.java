@@ -1,6 +1,7 @@
 package com.uri.gerenciadortcc.gerenciadortccApi.service.impl;
 
 import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.Orientacao;
+import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.TCC;
 import com.uri.gerenciadortcc.gerenciadortccApi.service.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,5 +68,23 @@ public class EmailServiceImpl implements EmailService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void notificaEscolhaDeOrientador(TCC tcc) {
+
+        try {
+
+            SimpleMailMessage mailProfessor = new SimpleMailMessage();
+
+            mailProfessor.setTo(tcc.getOrientador().getEmail());
+            mailProfessor.setSubject( "Escolha de Orientador" );
+            mailProfessor.setText("Você foi escolhido como orientador do aluno " + tcc.getAluno().getNome() +" do curso de " + tcc.getAluno().getCurso().getNome());
+            mailSender.send(mailProfessor);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }

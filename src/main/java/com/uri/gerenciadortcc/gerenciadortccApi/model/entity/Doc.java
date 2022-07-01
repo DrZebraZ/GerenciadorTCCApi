@@ -43,4 +43,7 @@ public class Doc {
 	@OneToOne(mappedBy = "arquivo")
 	private Professor professor;
 
+	@OneToOne(mappedBy = "arquivo")
+	private Biblioteca biblioteca;
+
 }

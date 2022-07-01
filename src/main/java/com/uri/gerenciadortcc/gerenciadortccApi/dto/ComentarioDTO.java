@@ -2,7 +2,7 @@ package com.uri.gerenciadortcc.gerenciadortccApi.dto;
 
 import lombok.Data;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class ComentarioDTO {
@@ -10,5 +10,5 @@ public class ComentarioDTO {
     private Long idComentario;
     private String descricao;
     private String comentario;
-    private LocalDate dataComentario;
+    private LocalDateTime dataComentario;
 }

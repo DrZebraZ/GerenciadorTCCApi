@@ -9,15 +9,14 @@ import com.uri.gerenciadortcc.gerenciadortccApi.dto.DataOrientacaoDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.OrientacaoDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.*;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.repository.*;
+import com.uri.gerenciadortcc.gerenciadortccApi.service.DocStorageService;
 import com.uri.gerenciadortcc.gerenciadortccApi.service.EmailService;
 import com.uri.gerenciadortcc.gerenciadortccApi.service.OrientacaoService;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +44,7 @@ public class OrientacaoServiceImpl implements OrientacaoService {
     private DataOrientacaoRepository dataOrientacaoRepository;
 
     @Autowired
-    private DocStorageServiceImpl docStorageService;
+    private DocStorageService docStorageService;
 
     @Override
     public OrientacaoDTO addOrientacao(OrientacaoObject orientacaoObject) {
@@ -68,7 +67,7 @@ public class OrientacaoServiceImpl implements OrientacaoService {
         if(orientacao.isPresent()){
             Comentarios comentario = new Comentarios();
             comentario.setComentario(comentarioObject.getComentario());
-            comentario.setDataComentario(LocalDate.now());
+            comentario.setDataComentario(LocalDateTime.now());
             comentario.setDescricao(comentarioObject.getAssunto());
             comentario.setOrientacao(orientacao.get());
             comentariosRepository.save(comentario);
@@ -150,7 +149,7 @@ public class OrientacaoServiceImpl implements OrientacaoService {
         if(comentarios.isPresent()){
             Comentarios comentario = comentarios.get();
             comentario.setComentario(comentario.getComentario());
-            comentario.setDataComentario(LocalDate.now());
+            comentario.setDataComentario(LocalDateTime.now());
             comentario.setDescricao(comentario.getDescricao());
             comentariosRepository.save(comentario);
             return parseOrientacaoDTO(comentario.getOrientacao());
@@ -160,8 +159,15 @@ public class OrientacaoServiceImpl implements OrientacaoService {
     }
 
     @Override
-    public void deletaComentario(Long comentarioId) {
-        comentariosRepository.deleteById(comentarioId);
+    public OrientacaoDTO deletaComentario(Long comentarioId) {
+        Optional<Comentarios> comentarios = comentariosRepository.findById(comentarioId);
+        if(comentarios.isPresent()){
+            Orientacao orientacao = comentarios.get().getOrientacao();
+            comentariosRepository.deleteById(comentarioId);
+            return parseOrientacaoDTO(orientacao);
+        }else{
+            throw  new RuntimeException();
+        }
     }
 
     @Override
@@ -208,11 +214,13 @@ public class OrientacaoServiceImpl implements OrientacaoService {
     }
 
     @Override
-    public void deletaDataOrientacao(Long dataOrientacaoId) {
+    public OrientacaoDTO deletaDataOrientacao(Long dataOrientacaoId) {
         Optional<DataOrientacao> dataOrientacao = dataOrientacaoRepository.findById(dataOrientacaoId);
         if(dataOrientacao.isPresent()){
+            Orientacao orientacao = dataOrientacao.get().getOrientacao();
             emailService.notificaDesmarcarDataOrientacao(dataOrientacao.get().getOrientacao(), dataOrientacao.get().getDataOrientacao());
             dataOrientacaoRepository.deleteById(dataOrientacaoId);
+            return parseOrientacaoDTO(orientacao);
         }else{
             throw new RuntimeException();
         }

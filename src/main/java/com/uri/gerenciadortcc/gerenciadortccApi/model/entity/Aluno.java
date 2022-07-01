@@ -32,7 +32,7 @@ public class Aluno extends Usuario {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "aluno")
     private List<Notificacao> notificacoes;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "DOC_ID")
     private Doc arquivo;
 

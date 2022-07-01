@@ -27,13 +27,13 @@ public interface OrientacaoService {
 
     public OrientacaoDTO atualizaComentario(Long comentarioId, ComentarioObject comentarioObject);
 
-    public void deletaComentario(Long comentarioId);
+    public OrientacaoDTO deletaComentario(Long comentarioId);
 
     public OrientacaoDTO marcaOrientacao(Long valueOf, DataOrientacaoObject dataOrientacao);
 
     OrientacaoDTO atualizaDataOrientacao(Long dataOrientacaoId, DataOrientacaoObject dataOrientacao);
 
-    void deletaDataOrientacao(Long dataOrientacaoId);
+    OrientacaoDTO deletaDataOrientacao(Long dataOrientacaoId);
 
     public ByteArrayInputStream getRelatorioOrientacao(Long orientacaoId) throws IOException;
 }

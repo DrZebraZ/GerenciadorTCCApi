@@ -52,6 +52,12 @@ public class TCCController {
         return "TCC deletado com Sucesso";
     }
 
+    @PostMapping("/{tccId}/biblioteca")
+    private String colocaTCCNaBiblioteca(@PathVariable("tccId")String tccId){
+        tccService.colocaNaBiblioteca(Long.valueOf(tccId));
+        return "TCC adicionado para a biblioteca";
+    }
+
     @PostMapping("/add/{tccId}/document")
     private ResponseEntity<ByteArrayResource> salvaDocumento(@PathVariable("tccId") String tccId, @RequestBody MultipartFile file){
         Doc doc = docStorageService.saveFile(Long.valueOf(tccId), file);
@@ -62,7 +68,7 @@ public class TCCController {
     }
 
     @GetMapping("/get/{tccId}/document")
-    private ResponseEntity<ByteArrayResource> salvaDocumento(@PathVariable("tccId") String tccId){
+    private ResponseEntity<ByteArrayResource> getDocumento(@PathVariable("tccId") String tccId){
         Doc doc = docStorageService.getDocument(Long.valueOf(tccId));
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(doc.getDocType()))

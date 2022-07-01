@@ -15,4 +15,6 @@ public interface TCCService {
     public TCCDTO atualizaTCC(Long tccId, TCCObject tccObject);
 
     public void deleteTCC(Long tccId);
+
+    void colocaNaBiblioteca(Long tccId);
 }

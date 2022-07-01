@@ -80,7 +80,7 @@ public class ProfessorController {
     }
 
     @GetMapping("/get/{professorId}/document")
-    private ResponseEntity<ByteArrayResource> salvaDocumento(@PathVariable("professorId") String professorId){
+    private ResponseEntity<ByteArrayResource> getDocumento(@PathVariable("professorId") String professorId){
         Doc doc =  docStorageService.getDocumentProfessor(Long.valueOf(professorId));
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(doc.getDocType()))

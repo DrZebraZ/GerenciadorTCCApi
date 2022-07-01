@@ -6,10 +6,7 @@ import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.property.TextAlignment;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.*;
-import com.uri.gerenciadortcc.gerenciadortccApi.model.repository.AlunoRepository;
-import com.uri.gerenciadortcc.gerenciadortccApi.model.repository.DocRepository;
-import com.uri.gerenciadortcc.gerenciadortccApi.model.repository.ProfessorRepository;
-import com.uri.gerenciadortcc.gerenciadortccApi.model.repository.TCCRepository;
+import com.uri.gerenciadortcc.gerenciadortccApi.model.repository.*;
 import com.uri.gerenciadortcc.gerenciadortccApi.service.DocStorageService;
 import com.uri.gerenciadortcc.gerenciadortccApi.utils.ReportUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +38,9 @@ public class DocStorageServiceImpl implements DocStorageService {
 
   @Autowired
   private ProfessorRepository professorRepository;
+
+  @Autowired
+  private BibliotecaRepository bibliotecaRepository;
 
   @Override
   public Doc saveFile(Long tccId, MultipartFile file) {
@@ -217,6 +217,64 @@ public class DocStorageServiceImpl implements DocStorageService {
 	}
 
 	@Override
+	public Doc saveFileBiblioteca(Long bibliotecaId, MultipartFile file) {
+		String docname = file.getName();
+		try {
+			Doc doc = new Doc(docname,file.getContentType(),file.getBytes());
+			Doc docEntity = docRepository.save(doc);
+			Optional<Biblioteca> biblioteca = bibliotecaRepository.findById(bibliotecaId);
+			if(biblioteca.isPresent()){
+				biblioteca.get().setArquivo(docEntity);
+				bibliotecaRepository.save(biblioteca.get());
+			}
+			return docEntity;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public Doc atualizaDocBiblioteca(Long bibliotecaId, MultipartFile file) {
+		Optional<Biblioteca> biblioteca = bibliotecaRepository.findById(bibliotecaId);
+		try {
+			if (biblioteca.isPresent()) {
+				Doc docEntity = biblioteca.get().getArquivo();
+				docEntity.setDocName(file.getName());
+				docEntity.setDocType(file.getContentType());
+				docEntity.setData(file.getBytes());
+				docRepository.save(docEntity);
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public Doc getDocumentBiblioteca(Long bibliotecaId) {
+		Optional<Biblioteca> biblioteca = bibliotecaRepository.findById(bibliotecaId);
+		if(biblioteca.isPresent()){
+			Doc docEntity = biblioteca.get().getArquivo();
+			return docEntity;
+		}
+		return null;
+	}
+
+	@Override
+	public Doc deleteDocBiblioteca(Long bibliotecaId) {
+		Optional<Biblioteca> biblioteca = bibliotecaRepository.findById(bibliotecaId);
+		if(biblioteca.isPresent()){
+			Doc docEntity = biblioteca.get().getArquivo();
+			biblioteca.get().setArquivo(null);
+			bibliotecaRepository.save(biblioteca.get());
+			docRepository.deleteById(docEntity.getId());
+		}
+		return null;
+	}
+
+	@Override
 	public ByteArrayInputStream getRelatorioOrientacao(Orientacao orientacao) throws IOException {
 		ReportUtils report = ReportUtils.getInstance();
 		report.setPageSize(PageSize.A4.rotate());
@@ -226,6 +284,13 @@ public class DocStorageServiceImpl implements DocStorageService {
 				.setTextAlignment(TextAlignment.CENTER)
 				.setFont(PdfFontFactory.createFont(StandardFonts.COURIER_BOLD))
 		);
+
+		report.addNewLine();
+
+		report.addParagraph(new Paragraph("Orientações do aluno " + orientacao.getAluno().getNome() + "do curso " + orientacao.getAluno().getCurso().getNome())
+				.setFontSize(17)
+				.setTextAlignment(TextAlignment.CENTER)
+				.setFont(PdfFontFactory.createFont(StandardFonts.COURIER_BOLD)));
 
 		List<DataOrientacao> dataOrientacoes = orientacao.getDatasOrientacoes();
 		if(dataOrientacoes != null && !dataOrientacoes.isEmpty()){
@@ -261,7 +326,7 @@ public class DocStorageServiceImpl implements DocStorageService {
 					.comparing((Comentarios c) -> c.getDataComentario())
 					.thenComparing(Comentarios::getDataComentario))
 					.forEach(comentario -> {
-						report.addTableColumn(comentario.getDataComentario().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+						report.addTableColumn(comentario.getDataComentario().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
 						report.addTableColumn(comentario.getDescricao());
 						report.addTableColumn(comentario.getComentario());
 					});

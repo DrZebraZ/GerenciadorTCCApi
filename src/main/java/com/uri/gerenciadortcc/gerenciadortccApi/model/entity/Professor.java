@@ -42,7 +42,7 @@ public class Professor extends Usuario{
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "professor")
 	private List<Notificacao> notificacoes;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne
 	@JoinColumn(name = "DOC_ID")
 	private Doc arquivo;
 

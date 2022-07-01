@@ -57,7 +57,7 @@ public class AlunoServiceImpl implements AlunoService {
                 docStorageService.saveFileAluno(alunoEntity.getId(), usuarioObject.getFoto());
             }
             notificacaoService.salvarNotificacaoNovoUsuarioAluno(aluno.getId());
-            return parserAlunoLoginDTO(aluno);
+            return parserAlunoLoginDTO(alunoEntity);
         }else return null;
     }
 
@@ -134,7 +134,7 @@ public class AlunoServiceImpl implements AlunoService {
         alunoLoginDTO.setNomeCurso(aluno.getCurso().getNome());
         if(aluno.getTcc() != null){
             TCCAlunoDTO tccAlunoDTO = new TCCAlunoDTO();
-            tccAlunoDTO.setIdTCC(aluno.getTcc().getIdTCC());
+            tccAlunoDTO.setIdTCC(aluno.getTcc().getId());
             tccAlunoDTO.setDescricao(aluno.getTcc().getDescricao());
             if(aluno.getTcc().getOrientador() != null){
                 tccAlunoDTO.setIdProfessor(aluno.getTcc().getOrientador().getId());

@@ -18,7 +18,7 @@ public class TCC {
     @Id
     @Column(name = "ID_TCC")
     @GeneratedValue( strategy = GenerationType.IDENTITY )
-    private Long idTCC;
+    private Long id;
 
     @Column(name = "TITULO")
     private String titulo;

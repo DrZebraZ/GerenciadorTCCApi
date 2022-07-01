@@ -34,5 +34,13 @@ public interface DocStorageService {
 
     public Doc deleteDocAluno(Long alunoId);
 
+    public Doc saveFileBiblioteca(Long bibliotecaId, MultipartFile file);
+
+    public Doc atualizaDocBiblioteca(Long bibliotecaId, MultipartFile file);
+
+    public Doc getDocumentBiblioteca(Long bibliotecaId);
+
+    public Doc deleteDocBiblioteca(Long bibliotecaId);
+
     public ByteArrayInputStream getRelatorioOrientacao(Orientacao orientacao) throws IOException;
 }

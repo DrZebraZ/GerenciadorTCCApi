@@ -65,9 +65,8 @@ public class OrientacaoController {
     }
 
     @DeleteMapping("/delete/{comentarioId}/comentario")
-    public String atualizaComentario(@PathVariable("comentarioId") String comentarioId){
-        orientacaoService.deletaComentario(Long.valueOf(comentarioId));
-        return "Comentario deletado com sucesso";
+    public OrientacaoDTO atualizaComentario(@PathVariable("comentarioId") String comentarioId){
+       return orientacaoService.deletaComentario(Long.valueOf(comentarioId));
     }
 
     @PutMapping("/put/{orientacaoId}/marcaData")
@@ -81,9 +80,8 @@ public class OrientacaoController {
     }
 
     @DeleteMapping("/delete/{dataOrientacaoId}")
-    public String deletaDataOrientacao(@PathVariable("dataOrientacaoId") String dataOrientacaoId){
-        orientacaoService.deletaDataOrientacao(Long.valueOf(dataOrientacaoId));
-        return "Data deletada com sucesso";
+    public OrientacaoDTO deletaDataOrientacao(@PathVariable("dataOrientacaoId") String dataOrientacaoId){
+       return orientacaoService.deletaDataOrientacao(Long.valueOf(dataOrientacaoId));
     }
 
     @GetMapping("{orientacaoId}/getRelatorio")

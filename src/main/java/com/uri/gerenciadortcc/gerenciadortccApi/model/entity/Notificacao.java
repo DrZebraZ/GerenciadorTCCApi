@@ -44,11 +44,11 @@ public class Notificacao {
 	@OneToOne(mappedBy = "notificacao")
 	private TCC tcc;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne
 	@JoinColumn(name = "ORIENTACAO_ID")
 	private Orientacao orientacao;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne
 	@JoinColumn(name = "DATA_ORIENTACAO_ID")
 	private DataOrientacao dataOrientacao;
 	
