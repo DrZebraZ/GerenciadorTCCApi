@@ -29,7 +29,7 @@ public class ProfessorController {
     @Autowired
     private DocStorageService docStorageService;
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ProfessorCompletoDTO executaLogin(@RequestBody loginObject login){
         ProfessorCompletoDTO professor = professorService.Login(login.getEmail(), login.getSenha());
         return professor;
