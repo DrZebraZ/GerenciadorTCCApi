@@ -2,6 +2,7 @@ package com.uri.gerenciadortcc.gerenciadortccApi.controller;
 
 import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.UsuarioObject;
 import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.loginObject;
+import com.uri.gerenciadortcc.gerenciadortccApi.dto.AlunoLoginDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.ProfessorCompletoDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.ProfessorDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.Doc;
@@ -68,6 +69,17 @@ public class ProfessorController {
     @GetMapping("/{cursoId}/coordenador")
     public ProfessorDTO getNamoProfessorCoordenador(@PathVariable("cursoId") String cursoId){
         return professorService.getProfessorCoordenador(Long.valueOf(cursoId));
+    }
+
+    @PutMapping("{professorId}/put")
+    public ProfessorCompletoDTO put(@PathVariable("professorId") String professorId, @RequestBody @Valid UsuarioObject usuarioObject) {
+        return professorService.atualizaProfessor(Long.valueOf(professorId), usuarioObject);
+    }
+
+    @DeleteMapping("{professorId}/delete")
+    public String delete(@PathVariable("professorId") String professorId) {
+        professorService.deletaProfessor(Long.valueOf(professorId));
+        return "Professor deletado com sucesso";
     }
 
     @PostMapping("/add/{professorId}/document")

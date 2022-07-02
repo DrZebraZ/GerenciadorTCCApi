@@ -49,8 +49,19 @@ public class AlunoController {
         return professor;
     }
 
+    @PutMapping("{alunoId}/put")
+    public AlunoLoginDTO put(@PathVariable("alunoId") String alunoId, @RequestBody @Valid UsuarioObject usuarioObject) {
+        return alunoService.atualizaAluno(Long.valueOf(alunoId), usuarioObject);
+    }
+
+    @DeleteMapping("{alunoId}/delete")
+    public String delete(@PathVariable("alunoId") String alunoId) {
+        alunoService.deletaAluno(Long.valueOf(alunoId));
+        return "Aluno deletado com sucesso";
+    }
+
     @GetMapping("/{cursoId}/getProfessor")
-    public ArrayList<AlunoDTO> getNamoProfessorPorCurso(@PathVariable("cursoId") String cursoId){
+    public ArrayList<AlunoDTO> getNomeAlunoPorCurso(@PathVariable("cursoId") String cursoId){
         return alunoService.getAlunoPorCurso(Long.valueOf(cursoId));
     }
 

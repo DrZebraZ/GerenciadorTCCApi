@@ -58,6 +58,9 @@ public class TCCServiceImpl implements TCCService {
         tcc.setTitulo(tccObject.getTitulo());
         Optional<Aluno> aluno = alunoRepository.findById(tccObject.getAlunoId());
         if(aluno.isPresent()){
+            if(aluno.get().getTcc() != null){
+                throw new RuntimeException();
+            }
             tcc.setAluno(aluno.get());
         }
 

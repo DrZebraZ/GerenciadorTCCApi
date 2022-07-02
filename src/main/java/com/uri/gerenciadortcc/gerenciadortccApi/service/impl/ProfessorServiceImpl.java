@@ -48,6 +48,9 @@ public class ProfessorServiceImpl implements ProfessorService {
             professor.setCpf(usuarioObject.getCpf());
             professor.setDatanasc(usuarioObject.getDatanasc());
             professor.setTipoUsuario(TipoUsuario.PROFESSOR);
+            if(usuarioObject.getDescricaoPessoal() != null){
+                professor.setDescricaoPessoal(usuarioObject.getDescricaoPessoal());
+            }
             Optional<Curso> curso = cursoRepository.findById(usuarioObject.getCursoId());
             if(curso.isPresent()){
                 List<Curso> cursos = new ArrayList<>();
@@ -120,6 +123,9 @@ public class ProfessorServiceImpl implements ProfessorService {
         Optional<Curso> curso = cursoRepository.findById(cursoId);
         if(professor.isPresent() && curso.isPresent()){
             List<Curso> cursos = professor.get().getCursos();
+            if(cursos.contains(curso.get())){
+                throw new RuntimeException();
+            }
             cursos.add(curso.get());
             professor.get().setCursos(cursos);
             return parseProfessorCompletoDTO(repository.save(professor.get()));
@@ -134,6 +140,48 @@ public class ProfessorServiceImpl implements ProfessorService {
         Optional<Professor> professor = repository.findById(professorId);
         if(professor.isPresent()){
             return parseProfessorCompletoDTO(professor.get());
+        }else {
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public ProfessorCompletoDTO atualizaProfessor(Long professorId, UsuarioObject usuarioObject) {
+        Optional<Professor> professor = repository.findById(professorId);
+        if(professor.isPresent()){
+            professor.get().setNome(usuarioObject.getNome());
+            professor.get().setEmail(usuarioObject.getEmail());
+            professor.get().setSenha(usuarioObject.getSenha());
+            professor.get().setCpf(usuarioObject.getCpf());
+            professor.get().setDatanasc(usuarioObject.getDatanasc());
+            professor.get().setTipoUsuario(TipoUsuario.PROFESSOR);
+            if(usuarioObject.getDescricaoPessoal() != null){
+                professor.get().setDescricaoPessoal(usuarioObject.getDescricaoPessoal());
+            }
+            Optional<Curso> curso = cursoRepository.findById(usuarioObject.getCursoId());
+            if(curso.isPresent()){
+                List<Curso> cursos = professor.get().getCursos();
+                if(!cursos.contains(curso.get())){
+                    cursos.add(curso.get());
+                    professor.get().setCursos(cursos);
+                }
+            }
+            Professor professorEntity = repository.save(professor.get());
+            if(usuarioObject.getFoto() != null){
+                docStorageService.saveFileProfessor(professorEntity.getId(), usuarioObject.getFoto());
+            }
+            return parseProfessorCompletoDTO(professorEntity);
+        }else {
+            throw new RuntimeException();
+        }
+
+    }
+
+    @Override
+    public void deletaProfessor(Long professorId) {
+        Optional<Professor> professor = repository.findById(professorId);
+        if(professor.isPresent()){
+            repository.deleteById(professorId);
         }else {
             throw new RuntimeException();
         }
@@ -173,6 +221,9 @@ public class ProfessorServiceImpl implements ProfessorService {
         professorCompletoDTO.setDatanasc(professor.getDatanasc());
         professorCompletoDTO.setEmail(professor.getEmail());
         professorCompletoDTO.setCoordenador(professor.getCoordenador());
+        if(professor.getDescricaoPessoal() != null){
+            professorCompletoDTO.setDescricaoPessoal(professor.getDescricaoPessoal());
+        }
         if(professor.getOrientacoes() != null && !professor.getOrientacoes().isEmpty()){
             List<TCCProfessorDTO> tccProfessorDTOS = new ArrayList<>();
             for(TCC tcc : professor.getOrientacoes()){

@@ -36,6 +36,8 @@ public class UsuarioObject {
 
     private String tipoUsuario;
 
+    private String descricaoPessoal;
+
     private MultipartFile foto;
 
     private Long cursoId;

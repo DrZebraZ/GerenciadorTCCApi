@@ -31,4 +31,8 @@ public interface ProfessorService {
     ProfessorCompletoDTO adicionaCurso(Long professorId, Long cursoId);
 
     ProfessorCompletoDTO getProfessor(Long professorId);
+
+    ProfessorCompletoDTO atualizaProfessor(Long professorId, UsuarioObject usuarioObject);
+
+    void deletaProfessor(Long professorId);
 }

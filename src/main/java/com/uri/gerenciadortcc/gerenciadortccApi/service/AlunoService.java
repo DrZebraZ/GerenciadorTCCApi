@@ -24,4 +24,8 @@ public interface AlunoService {
     AlunoLoginDTO getAluno(Long alunoId);
 
     ArrayList<AlunoDTO> getAlunoPorCurso(Long cursoId);
+
+    AlunoLoginDTO atualizaAluno(Long alunoId, UsuarioObject usuarioObject);
+
+    void deletaAluno(Long alunoId);
 }

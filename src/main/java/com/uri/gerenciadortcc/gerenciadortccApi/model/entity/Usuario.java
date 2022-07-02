@@ -35,5 +35,8 @@ public class Usuario {
 	
 	@Column(name = "VERIFICADO")
 	private Boolean verificado;
+
+	@Column(name = "DESCRICAO_PESSOAL")
+	private String descricaoPessoal;
 	
 }

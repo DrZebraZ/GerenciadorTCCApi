@@ -18,6 +18,8 @@ public class ProfessorCompletoDTO {
 
     private String email;
 
+    private String descricaoPessoal;
+
     private Boolean coordenador;
 
     private List<TCCProfessorDTO> tccs;

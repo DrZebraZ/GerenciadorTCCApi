@@ -48,6 +48,9 @@ public class AlunoServiceImpl implements AlunoService {
             aluno.setCpf(usuarioObject.getCpf());
             aluno.setDatanasc(usuarioObject.getDatanasc());
             aluno.setTipoUsuario(TipoUsuario.ALUNO);
+            if(usuarioObject.getDescricaoPessoal() != null){
+                aluno.setDescricaoPessoal(usuarioObject.getDescricaoPessoal());
+            }
             Optional<Curso> curso = cursoRepository.findById(usuarioObject.getCursoId());
             if(curso.isPresent()){
                 aluno.setCurso(curso.get());
@@ -98,6 +101,42 @@ public class AlunoServiceImpl implements AlunoService {
     }
 
     @Override
+    public AlunoLoginDTO atualizaAluno(Long alunoId, UsuarioObject usuarioObject) {
+        Optional<Aluno> aluno = repository.findById(alunoId);
+        if(aluno.isPresent()){
+            aluno.get().setNome(usuarioObject.getNome());
+            aluno.get().setEmail(usuarioObject.getEmail());
+            aluno.get().setSenha(usuarioObject.getSenha());
+            aluno.get().setCpf(usuarioObject.getCpf());
+            aluno.get().setDatanasc(usuarioObject.getDatanasc());
+            if(usuarioObject.getDescricaoPessoal() != null){
+                aluno.get().setDescricaoPessoal(usuarioObject.getDescricaoPessoal());
+            }
+            Optional<Curso> curso = cursoRepository.findById(usuarioObject.getCursoId());
+            if(curso.isPresent()){
+                aluno.get().setCurso(curso.get());
+            }
+            Aluno alunoEntity = repository.save(aluno.get());
+            if(usuarioObject.getFoto() != null){
+                docStorageService.saveFileAluno(alunoEntity.getId(), usuarioObject.getFoto());
+            }
+            return parserAlunoLoginDTO(alunoEntity);
+        }else{
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public void deletaAluno(Long alunoId) {
+        Optional<Aluno> aluno = repository.findById(alunoId);
+        if(aluno.isPresent()){
+            repository.deleteById(alunoId);
+        }else{
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
     public boolean validarEmail(String email) {
         boolean existe = repository.existsByEmail(email);
         if (existe){
@@ -132,6 +171,9 @@ public class AlunoServiceImpl implements AlunoService {
         alunoLoginDTO.setEmail(aluno.getEmail());
         alunoLoginDTO.setIdCurso(aluno.getCurso().getIdCurso());
         alunoLoginDTO.setNomeCurso(aluno.getCurso().getNome());
+        if(aluno.getDescricaoPessoal() != null){
+            alunoLoginDTO.setDescricaoPessoal(aluno.getDescricaoPessoal());
+        }
         if(aluno.getTcc() != null){
             TCCAlunoDTO tccAlunoDTO = new TCCAlunoDTO();
             tccAlunoDTO.setIdTCC(aluno.getTcc().getId());
