@@ -39,6 +39,10 @@ public class TCC {
     private Doc arquivo;
 
     @OneToOne
+    @JoinColumn(name = "ORIENTACAO_ID")
+    private Orientacao orientacao;
+
+    @OneToOne
     @JoinColumn(name = "NOTIFICACAO_ID")
     private Notificacao notificacao;
 

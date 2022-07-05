@@ -8,6 +8,7 @@ import com.uri.gerenciadortcc.gerenciadortccApi.dto.ComentariosDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.DataOrientacaoDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.OrientacaoDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.*;
+import com.uri.gerenciadortcc.gerenciadortccApi.model.enums.TipoUsuario;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.repository.*;
 import com.uri.gerenciadortcc.gerenciadortccApi.service.DocStorageService;
 import com.uri.gerenciadortcc.gerenciadortccApi.service.EmailService;
@@ -52,7 +53,7 @@ public class OrientacaoServiceImpl implements OrientacaoService {
         Optional<Professor> professor = professorRepository.findById(orientacaoObject.getProfessorId());
         if(aluno.isPresent() && professor.isPresent()){
             Orientacao orientacao = new Orientacao();
-            orientacao.setTituloTCC(aluno.get().getTcc().getDescricao());
+            orientacao.setTituloTCC(aluno.get().getTcc().getTitulo());
             orientacao.setAluno(aluno.get());
             orientacao.setProfessor(professor.get());
             return parseOrientacaoDTO(orientacaoRepository.save(orientacao));
@@ -62,7 +63,7 @@ public class OrientacaoServiceImpl implements OrientacaoService {
     }
 
     @Override
-    public OrientacaoDTO addComentario(Long orientacaoId, ComentarioObject comentarioObject) {
+    public OrientacaoDTO addComentarioProfessor(Long orientacaoId, ComentarioObject comentarioObject) {
         Optional<Orientacao> orientacao = orientacaoRepository.findById(orientacaoId);
         if(orientacao.isPresent()){
             Comentarios comentario = new Comentarios();
@@ -70,6 +71,35 @@ public class OrientacaoServiceImpl implements OrientacaoService {
             comentario.setDataComentario(LocalDateTime.now());
             comentario.setDescricao(comentarioObject.getAssunto());
             comentario.setOrientacao(orientacao.get());
+            comentario.setAutor(TipoUsuario.PROFESSOR);
+            comentariosRepository.save(comentario);
+            Orientacao orientacaoEntity = orientacao.get();
+            if(orientacaoEntity.getComentarios() != null){
+                List<Comentarios> comentariosList = orientacaoEntity.getComentarios();
+                comentariosList.add(comentario);
+                orientacaoEntity.setComentarios(comentariosList);
+                return parseOrientacaoDTO(orientacaoRepository.save(orientacaoEntity));
+            }else {
+                List<Comentarios> comentariosList = new ArrayList<>();
+                comentariosList.add(comentario);
+                orientacaoEntity.setComentarios(comentariosList);
+                return parseOrientacaoDTO(orientacaoRepository.save(orientacaoEntity));
+            }
+        }else{
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public OrientacaoDTO addComentarioAluno(Long orientacaoId, ComentarioObject comentarioObject) {
+        Optional<Orientacao> orientacao = orientacaoRepository.findById(orientacaoId);
+        if(orientacao.isPresent()){
+            Comentarios comentario = new Comentarios();
+            comentario.setComentario(comentarioObject.getComentario());
+            comentario.setDataComentario(LocalDateTime.now());
+            comentario.setDescricao(comentarioObject.getAssunto());
+            comentario.setOrientacao(orientacao.get());
+            comentario.setAutor(TipoUsuario.ALUNO);
             comentariosRepository.save(comentario);
             Orientacao orientacaoEntity = orientacao.get();
             if(orientacaoEntity.getComentarios() != null){
@@ -236,6 +266,15 @@ public class OrientacaoServiceImpl implements OrientacaoService {
         }
     }
 
+    @Override
+    public void atualizaOrientacao(Orientacao orientacao, TCC tcc) {
+        orientacao.setTituloTCC(tcc.getTitulo());
+        orientacao.setProfessor(tcc.getOrientador());
+        orientacao.setAluno(tcc.getAluno());
+        orientacao.setTcc(tcc);
+        orientacaoRepository.save(orientacao);
+    }
+
     private ComentariosDTO parseComentarioDTO(List<Comentarios> comentarios) {
         ComentariosDTO comentariosDTO = new ComentariosDTO();
         List<ComentarioDTO> comentariosList = new ArrayList<>();
@@ -245,6 +284,7 @@ public class OrientacaoServiceImpl implements OrientacaoService {
             comentario.setDescricao(comentarioEntity.getDescricao());
             comentario.setDataComentario(comentarioEntity.getDataComentario());
             comentario.setIdComentario(comentarioEntity.getIdComentario());
+            comentario.setAutor(comentarioEntity.getAutor());
             comentariosList.add(comentario);
         }
         comentariosDTO.setComentarios(comentariosList);

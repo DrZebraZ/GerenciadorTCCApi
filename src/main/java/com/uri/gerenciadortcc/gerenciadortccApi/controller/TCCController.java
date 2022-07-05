@@ -9,12 +9,14 @@ import com.uri.gerenciadortcc.gerenciadortccApi.service.TCCService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -68,12 +70,16 @@ public class TCCController {
     }
 
     @GetMapping("/get/{tccId}/document")
-    private ResponseEntity<ByteArrayResource> getDocumento(@PathVariable("tccId") String tccId){
+    private ResponseEntity<InputStreamResource> getDocumento(@PathVariable("tccId") String tccId){
         Doc doc = docStorageService.getDocument(Long.valueOf(tccId));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION,"attachment:filename=\""+doc.getDocName()+"\"");
+
         return ResponseEntity.ok()
+                .headers(headers)
                 .contentType(MediaType.parseMediaType(doc.getDocType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment:filename=\""+doc.getDocName()+"\"")
-                .body(new ByteArrayResource(doc.getData()));
+                .body(new InputStreamResource(new ByteArrayInputStream(doc.getData())));
     }
 
     @PutMapping("/update/{tccId}/document")

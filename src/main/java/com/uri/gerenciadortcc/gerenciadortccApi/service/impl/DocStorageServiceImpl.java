@@ -67,11 +67,22 @@ public class DocStorageServiceImpl implements DocStorageService {
 		Optional<TCC> tcc = tccRepository.findById(tccId);
 		try {
 			if (tcc.isPresent()) {
-				Doc docEntity = tcc.get().getArquivo();
+				if(tcc.get().getArquivo() != null){
+					Doc docEntity = tcc.get().getArquivo();
+					docEntity.setDocName(file.getName());
+					docEntity.setDocType(file.getContentType());
+					docEntity.setData(file.getBytes());
+					docRepository.save(docEntity);
+					return docEntity;
+				}
+				Doc docEntity = new Doc();
 				docEntity.setDocName(file.getName());
 				docEntity.setDocType(file.getContentType());
 				docEntity.setData(file.getBytes());
-				docRepository.save(docEntity);
+				Doc doc = docRepository.save(docEntity);
+				tcc.get().setArquivo(doc);
+				tccRepository.save(tcc.get());
+				return doc;
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -287,7 +298,7 @@ public class DocStorageServiceImpl implements DocStorageService {
 
 		report.addNewLine();
 
-		report.addParagraph(new Paragraph("Orientações do aluno " + orientacao.getAluno().getNome() + "do curso " + orientacao.getAluno().getCurso().getNome())
+		report.addParagraph(new Paragraph("Orientações do aluno " + orientacao.getAluno().getNome() + " do curso de " + orientacao.getAluno().getCurso().getNome())
 				.setFontSize(17)
 				.setTextAlignment(TextAlignment.CENTER)
 				.setFont(PdfFontFactory.createFont(StandardFonts.COURIER_BOLD)));
@@ -320,13 +331,14 @@ public class DocStorageServiceImpl implements DocStorageService {
 					.setFont(PdfFontFactory.createFont(StandardFonts.COURIER_BOLD))
 			);
 			report.addNewLine();
-			report.openTable(3);
-			report.addTableHeader("DATA", "DESCRIÇÃO", "COMENTÁRIO");
+			report.openTable(4);
+			report.addTableHeader("DATA", "AUTOR", "DESCRIÇÃO", "COMENTÁRIO");
 			comentarios.stream().sorted(Comparator
 					.comparing((Comentarios c) -> c.getDataComentario())
 					.thenComparing(Comentarios::getDataComentario))
 					.forEach(comentario -> {
 						report.addTableColumn(comentario.getDataComentario().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+						report.addTableColumn(comentario.getAutor());
 						report.addTableColumn(comentario.getDescricao());
 						report.addTableColumn(comentario.getComentario());
 					});

@@ -29,6 +29,9 @@ public class Orientacao {
     @JoinColumn(name = "ALUNO_ID")
     private Aluno aluno;
 
+    @OneToOne(mappedBy = "orientacao")
+    private TCC tcc;
+
     @ManyToOne
     @JoinColumn(name = "PROFESSOR_ID")
     private Professor professor;

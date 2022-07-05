@@ -7,6 +7,8 @@ public class TCCAlunoDTO {
 
     private Long idTCC;
 
+    private String titulo;
+
     private String descricao;
 
     private Long idProfessor;

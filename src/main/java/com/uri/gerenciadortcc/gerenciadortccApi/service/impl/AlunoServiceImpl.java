@@ -177,6 +177,7 @@ public class AlunoServiceImpl implements AlunoService {
         if(aluno.getTcc() != null){
             TCCAlunoDTO tccAlunoDTO = new TCCAlunoDTO();
             tccAlunoDTO.setIdTCC(aluno.getTcc().getId());
+            tccAlunoDTO.setTitulo(aluno.getTcc().getTitulo());
             tccAlunoDTO.setDescricao(aluno.getTcc().getDescricao());
             if(aluno.getTcc().getOrientador() != null){
                 tccAlunoDTO.setIdProfessor(aluno.getTcc().getOrientador().getId());

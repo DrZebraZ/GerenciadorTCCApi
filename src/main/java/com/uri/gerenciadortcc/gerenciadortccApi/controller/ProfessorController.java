@@ -11,6 +11,7 @@ import com.uri.gerenciadortcc.gerenciadortccApi.service.DocStorageService;
 import com.uri.gerenciadortcc.gerenciadortccApi.service.ProfessorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -92,12 +94,15 @@ public class ProfessorController {
     }
 
     @GetMapping("/get/{professorId}/document")
-    private ResponseEntity<ByteArrayResource> getDocumento(@PathVariable("professorId") String professorId){
+    private ResponseEntity<InputStreamResource> getDocumento(@PathVariable("professorId") String professorId){
         Doc doc =  docStorageService.getDocumentProfessor(Long.valueOf(professorId));
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION,"attachment:filename=\""+doc.getDocName()+"\"");
+
         return ResponseEntity.ok()
+                .headers(headers)
                 .contentType(MediaType.parseMediaType(doc.getDocType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment:filename=\""+doc.getDocName()+"\"")
-                .body(new ByteArrayResource(doc.getData()));
+                .body(new InputStreamResource(new ByteArrayInputStream(doc.getData())));
     }
 
     @PutMapping("/update/{professorId}/document")

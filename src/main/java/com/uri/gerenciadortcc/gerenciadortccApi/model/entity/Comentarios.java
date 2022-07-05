@@ -1,5 +1,6 @@
 package com.uri.gerenciadortcc.gerenciadortccApi.model.entity;
 
+import com.uri.gerenciadortcc.gerenciadortccApi.model.enums.TipoUsuario;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +28,10 @@ public class Comentarios {
 
     @Column(name = "COMENTARIO")
     private String comentario;
+
+    @Column(name="AUTOR")
+    @Enumerated(value = EnumType.STRING)
+    private TipoUsuario autor;
 
     @Column(name = "DATA_COMENTARIO")
     private LocalDateTime dataComentario;

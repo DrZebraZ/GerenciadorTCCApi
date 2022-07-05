@@ -1,18 +1,13 @@
 package com.uri.gerenciadortcc.gerenciadortccApi.service.impl;
 
 import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.BibliotecaObject;
+import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.OrientacaoObject;
 import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.TCCObject;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.AlunoDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.ProfessorDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.TCCDTO;
-import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.Aluno;
-import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.Doc;
-import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.Professor;
-import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.TCC;
-import com.uri.gerenciadortcc.gerenciadortccApi.model.repository.AlunoRepository;
-import com.uri.gerenciadortcc.gerenciadortccApi.model.repository.DocRepository;
-import com.uri.gerenciadortcc.gerenciadortccApi.model.repository.ProfessorRepository;
-import com.uri.gerenciadortcc.gerenciadortccApi.model.repository.TCCRepository;
+import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.*;
+import com.uri.gerenciadortcc.gerenciadortccApi.model.repository.*;
 import com.uri.gerenciadortcc.gerenciadortccApi.service.BibliotecaService;
 import com.uri.gerenciadortcc.gerenciadortccApi.service.EmailService;
 import com.uri.gerenciadortcc.gerenciadortccApi.service.NotificacaoService;
@@ -51,6 +46,12 @@ public class TCCServiceImpl implements TCCService {
     @Autowired
     private DocRepository docRepository;
 
+    @Autowired
+    private OrientacaoServiceImpl orientacaoService;
+
+    @Autowired
+    private OrientacaoRepository orientacaoRepository;
+
     @Override
     public TCCDTO salvaTCC(TCCObject tccObject) {
         TCC tcc = new TCC();
@@ -68,10 +69,24 @@ public class TCCServiceImpl implements TCCService {
         if(professor.isPresent()){
             tcc.setOrientador(professor.get());
         }
-
         TCC tccEntity = tccRepository.save(tcc);
 
         emailService.notificaEscolhaDeOrientador(tccEntity);
+
+        OrientacaoObject orientacaoObject = new OrientacaoObject();
+        orientacaoObject.setAlunoId(tccEntity.getAluno().getId());
+        orientacaoObject.setProfessorId(tccEntity.getOrientador().getId());
+
+        Orientacao orientacao = new Orientacao();
+        orientacao.setTituloTCC(tcc.getTitulo());
+        orientacao.setAluno(aluno.get());
+        orientacao.setProfessor(professor.get());
+
+        Orientacao orientacaoEntity = orientacaoRepository.save(orientacao);
+
+        tccEntity.setOrientacao(orientacaoEntity);
+
+        tccRepository.save(tccEntity);
 
         return parseTCCDTO(tccEntity);
 
@@ -104,7 +119,12 @@ public class TCCServiceImpl implements TCCService {
                 tccAtualizado.setAluno(aluno.get());
             }
 
-            return parseTCCDTO(tccRepository.save(tccAtualizado));
+            TCC tccAtualizadoEntity = tccRepository.save(tccAtualizado);
+
+
+            orientacaoService.atualizaOrientacao(tccAtualizado.getOrientacao(), tccAtualizadoEntity);
+
+            return parseTCCDTO(tccAtualizadoEntity);
         }
         throw new RuntimeException();
     }

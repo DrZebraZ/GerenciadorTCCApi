@@ -229,6 +229,7 @@ public class ProfessorServiceImpl implements ProfessorService {
             for(TCC tcc : professor.getOrientacoes()){
                 TCCProfessorDTO tccProfessorDTO = new TCCProfessorDTO();
                 tccProfessorDTO.setIdTCC(tcc.getId());
+                tccProfessorDTO.setTitulo(tcc.getTitulo());
                 tccProfessorDTO.setDescricao(tcc.getDescricao());
                 tccProfessorDTO.setIdAluno(tcc.getAluno().getId());
                 tccProfessorDTO.setNomeAluno(tcc.getAluno().getNome());

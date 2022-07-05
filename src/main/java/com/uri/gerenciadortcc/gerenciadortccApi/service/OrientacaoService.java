@@ -5,17 +5,20 @@ import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.DataOrientaca
 import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.OrientacaoObject;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.ComentariosDTO;
 import com.uri.gerenciadortcc.gerenciadortccApi.dto.OrientacaoDTO;
+import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.Orientacao;
+import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.TCC;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface OrientacaoService {
 
     public OrientacaoDTO addOrientacao(OrientacaoObject orientacaoObject);
 
-    public OrientacaoDTO addComentario(Long orientacaoId, ComentarioObject comentarioObject);
+    public OrientacaoDTO addComentarioProfessor(Long orientacaoId, ComentarioObject comentarioObject);
+
+    public OrientacaoDTO addComentarioAluno(Long orientacaoId, ComentarioObject comentarioObject);
 
     public ComentariosDTO getComentarios(Long orientacaoId);
 
@@ -36,4 +39,6 @@ public interface OrientacaoService {
     OrientacaoDTO deletaDataOrientacao(Long dataOrientacaoId);
 
     public ByteArrayInputStream getRelatorioOrientacao(Long orientacaoId) throws IOException;
+
+    public void atualizaOrientacao(Orientacao orientacao, TCC tcc);
 }

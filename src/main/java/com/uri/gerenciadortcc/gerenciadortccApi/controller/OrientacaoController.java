@@ -48,9 +48,14 @@ public class OrientacaoController {
         return orientacoes;
     }
 
-    @PostMapping("/add/{orientacaoId}/comentario")
+    @PostMapping("/add/professor/{orientacaoId}/comentario")
     public OrientacaoDTO addComentario(@PathVariable("orientacaoId") String orientacaoId, @RequestBody ComentarioObject comentario){
-        return orientacaoService.addComentario(Long.valueOf(orientacaoId), comentario);
+        return orientacaoService.addComentarioProfessor(Long.valueOf(orientacaoId), comentario);
+    }
+
+    @PostMapping("/add/aluno/{orientacaoId}/comentario")
+    public OrientacaoDTO addComentarioAluno(@PathVariable("orientacaoId") String orientacaoId, @RequestBody ComentarioObject comentario){
+        return orientacaoService.addComentarioAluno(Long.valueOf(orientacaoId), comentario);
     }
 
     @GetMapping("/get/{orientacaoId}/comentario")

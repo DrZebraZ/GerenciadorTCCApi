@@ -12,6 +12,7 @@ import com.uri.gerenciadortcc.gerenciadortccApi.service.AlunoService;
 import com.uri.gerenciadortcc.gerenciadortccApi.service.DocStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -75,13 +77,16 @@ public class AlunoController {
     }
 
     @GetMapping("/get/{alunoId}/document")
-    private ResponseEntity<ByteArrayResource> getDocumento(@PathVariable("alunoId") String alunoId){
+    private ResponseEntity<InputStreamResource> getDocumento(@PathVariable("alunoId") String alunoId){
         Doc doc =  docStorageService.getDocumentAluno(Long.valueOf(alunoId));
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION,"attachment:filename=\""+doc.getDocName()+"\"");
+
         return ResponseEntity.ok()
+                .headers(headers)
                 .contentType(MediaType.parseMediaType(doc.getDocType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment:filename=\""+doc.getDocName()+"\"")
-                .body(new ByteArrayResource(doc.getData()));
+                .body(new InputStreamResource(new ByteArrayInputStream(doc.getData())));
     }
 
     @PutMapping("/update/{alunoId}/document")
