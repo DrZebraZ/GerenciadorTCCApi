@@ -3,10 +3,7 @@ package com.uri.gerenciadortcc.gerenciadortccApi.service.impl;
 import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.ComentarioObject;
 import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.DataOrientacaoObject;
 import com.uri.gerenciadortcc.gerenciadortccApi.controller.objects.OrientacaoObject;
-import com.uri.gerenciadortcc.gerenciadortccApi.dto.ComentarioDTO;
-import com.uri.gerenciadortcc.gerenciadortccApi.dto.ComentariosDTO;
-import com.uri.gerenciadortcc.gerenciadortccApi.dto.DataOrientacaoDTO;
-import com.uri.gerenciadortcc.gerenciadortccApi.dto.OrientacaoDTO;
+import com.uri.gerenciadortcc.gerenciadortccApi.dto.*;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.*;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.enums.TipoUsuario;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.repository.*;
@@ -19,9 +16,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class OrientacaoServiceImpl implements OrientacaoService {
@@ -283,6 +278,8 @@ public class OrientacaoServiceImpl implements OrientacaoService {
             comentario.setAutor(comentarioEntity.getAutor());
             comentariosList.add(comentario);
         }
+        comentariosList.sort(Comparator.comparing(ComentarioDTO::getDataComentario));
+        Collections.sort(comentariosList, Collections.reverseOrder());
         comentariosDTO.setComentarios(comentariosList);
         return comentariosDTO;
     }
