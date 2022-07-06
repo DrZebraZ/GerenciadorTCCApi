@@ -10,7 +10,6 @@ public class ComentarioDTO {
 
     private Long idComentario;
     private TipoUsuario autor;
-    private String descricao;
     private String comentario;
     private LocalDateTime dataComentario;
 }

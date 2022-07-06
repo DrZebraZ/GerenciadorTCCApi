@@ -331,15 +331,14 @@ public class DocStorageServiceImpl implements DocStorageService {
 					.setFont(PdfFontFactory.createFont(StandardFonts.COURIER_BOLD))
 			);
 			report.addNewLine();
-			report.openTable(4);
-			report.addTableHeader("DATA", "AUTOR", "DESCRIÇÃO", "COMENTÁRIO");
+			report.openTable(3);
+			report.addTableHeader("DATA", "AUTOR", "COMENTÁRIO");
 			comentarios.stream().sorted(Comparator
 					.comparing((Comentarios c) -> c.getDataComentario())
 					.thenComparing(Comentarios::getDataComentario))
 					.forEach(comentario -> {
 						report.addTableColumn(comentario.getDataComentario().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
 						report.addTableColumn(comentario.getAutor());
-						report.addTableColumn(comentario.getDescricao());
 						report.addTableColumn(comentario.getComentario());
 					});
 			report.closeTable();

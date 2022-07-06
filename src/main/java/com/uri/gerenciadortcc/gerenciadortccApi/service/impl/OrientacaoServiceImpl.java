@@ -69,7 +69,6 @@ public class OrientacaoServiceImpl implements OrientacaoService {
             Comentarios comentario = new Comentarios();
             comentario.setComentario(comentarioObject.getComentario());
             comentario.setDataComentario(LocalDateTime.now());
-            comentario.setDescricao(comentarioObject.getAssunto());
             comentario.setOrientacao(orientacao.get());
             comentario.setAutor(TipoUsuario.PROFESSOR);
             comentariosRepository.save(comentario);
@@ -97,7 +96,6 @@ public class OrientacaoServiceImpl implements OrientacaoService {
             Comentarios comentario = new Comentarios();
             comentario.setComentario(comentarioObject.getComentario());
             comentario.setDataComentario(LocalDateTime.now());
-            comentario.setDescricao(comentarioObject.getAssunto());
             comentario.setOrientacao(orientacao.get());
             comentario.setAutor(TipoUsuario.ALUNO);
             comentariosRepository.save(comentario);
@@ -180,7 +178,6 @@ public class OrientacaoServiceImpl implements OrientacaoService {
             Comentarios comentario = comentarios.get();
             comentario.setComentario(comentario.getComentario());
             comentario.setDataComentario(LocalDateTime.now());
-            comentario.setDescricao(comentario.getDescricao());
             comentariosRepository.save(comentario);
             return parseOrientacaoDTO(comentario.getOrientacao());
         }else {
@@ -281,7 +278,6 @@ public class OrientacaoServiceImpl implements OrientacaoService {
         for(Comentarios comentarioEntity : comentarios){
             ComentarioDTO comentario = new ComentarioDTO();
             comentario.setComentario(comentarioEntity.getComentario());
-            comentario.setDescricao(comentarioEntity.getDescricao());
             comentario.setDataComentario(comentarioEntity.getDataComentario());
             comentario.setIdComentario(comentarioEntity.getIdComentario());
             comentario.setAutor(comentarioEntity.getAutor());

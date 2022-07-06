@@ -23,9 +23,6 @@ public class Comentarios {
     @GeneratedValue( strategy = GenerationType.IDENTITY )
     private Long idComentario;
 
-    @Column(name = "DESCRICAO")
-    private String descricao;
-
     @Column(name = "COMENTARIO")
     private String comentario;
 
