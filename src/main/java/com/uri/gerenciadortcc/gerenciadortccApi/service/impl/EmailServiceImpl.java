@@ -1,7 +1,9 @@
 package com.uri.gerenciadortcc.gerenciadortccApi.service.impl;
 
+import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.Comentarios;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.Orientacao;
 import com.uri.gerenciadortcc.gerenciadortccApi.model.entity.TCC;
+import com.uri.gerenciadortcc.gerenciadortccApi.model.enums.TipoUsuario;
 import com.uri.gerenciadortcc.gerenciadortccApi.service.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +86,38 @@ public class EmailServiceImpl implements EmailService {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void notificaComentario(Orientacao orientacao, Comentarios comentarios) {
+        SimpleMailMessage mailAluno = new SimpleMailMessage();
+        SimpleMailMessage mailProfessor = new SimpleMailMessage();
+        String localDateTimeFormatado = comentarios.getDataComentario().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+
+        if(comentarios.getAutor().equals(TipoUsuario.ALUNO)){
+            mailAluno.setTo( orientacao.getAluno().getEmail() );
+            mailAluno.setSubject( "Novo comentário" );
+            mailAluno.setText("Você enviou uma mensagem ao seu orientador no dia " + localDateTimeFormatado + " : \n" + comentarios.getComentario());
+            mailSender.send(mailAluno);
+
+
+            mailProfessor.setTo(orientacao.getProfessor().getEmail());
+            mailProfessor.setSubject( "Nova Mensagem" );
+            mailProfessor.setText("Nova mensagem do aluno " + orientacao.getAluno().getNome() +" do curso de " + orientacao.getAluno().getCurso().getNome() + " no dia " + localDateTimeFormatado + " :\n" + comentarios.getComentario());
+            mailSender.send(mailProfessor);
+        }else if(comentarios.getAutor().equals(TipoUsuario.PROFESSOR)){
+            mailAluno.setTo(orientacao.getAluno().getEmail());
+            mailAluno.setSubject( "Novo comentário" );
+            mailAluno.setText("Você recebeu uma mensagem do seu orientador no dia " + localDateTimeFormatado + " : \n" + comentarios.getComentario());
+            mailSender.send(mailAluno);
+
+
+            mailProfessor.setTo(orientacao.getProfessor().getEmail());
+            mailProfessor.setSubject( "Nova Mensagem" );
+            mailProfessor.setText("Mensagem enviada ao aluno " + orientacao.getAluno().getNome() +" do curso de " + orientacao.getAluno().getCurso().getNome() + " no dia " + localDateTimeFormatado + " :\n" + comentarios.getComentario());
+            mailSender.send(mailProfessor);
         }
 
     }

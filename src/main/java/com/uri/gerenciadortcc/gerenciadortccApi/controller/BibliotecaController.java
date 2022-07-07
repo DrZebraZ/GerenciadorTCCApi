@@ -9,12 +9,14 @@ import com.uri.gerenciadortcc.gerenciadortccApi.service.BibliotecaService;
 import com.uri.gerenciadortcc.gerenciadortccApi.service.DocStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -69,13 +71,16 @@ public class BibliotecaController {
     }
 
     @GetMapping("/get/{bibliotecaId}/document")
-    private ResponseEntity<ByteArrayResource> getDocumento(@PathVariable("bibliotecaId") String bibliotecaId){
+    private ResponseEntity<InputStreamResource> getDocumento(@PathVariable("bibliotecaId") String bibliotecaId){
         Doc doc =  docStorageService.getDocumentBiblioteca(Long.valueOf(bibliotecaId));
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION,"attachment:filename=\""+doc.getDocName()+"\"");
+
         return ResponseEntity.ok()
+                .headers(headers)
                 .contentType(MediaType.parseMediaType(doc.getDocType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment:filename=\""+doc.getDocName()+"\"")
-                .body(new ByteArrayResource(doc.getData()));
+                .body(new InputStreamResource(new ByteArrayInputStream(doc.getData())));
     }
 
     @PutMapping("/update/{bibliotecaId}/document")

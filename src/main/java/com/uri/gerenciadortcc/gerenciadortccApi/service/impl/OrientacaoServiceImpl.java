@@ -68,6 +68,7 @@ public class OrientacaoServiceImpl implements OrientacaoService {
             comentario.setAutor(TipoUsuario.PROFESSOR);
             comentariosRepository.save(comentario);
             Orientacao orientacaoEntity = orientacao.get();
+            emailService.notificaComentario(orientacaoEntity, comentario);
             if(orientacaoEntity.getComentarios() != null){
                 List<Comentarios> comentariosList = orientacaoEntity.getComentarios();
                 comentariosList.add(comentario);
@@ -95,6 +96,7 @@ public class OrientacaoServiceImpl implements OrientacaoService {
             comentario.setAutor(TipoUsuario.ALUNO);
             comentariosRepository.save(comentario);
             Orientacao orientacaoEntity = orientacao.get();
+            emailService.notificaComentario(orientacaoEntity, comentario);
             if(orientacaoEntity.getComentarios() != null){
                 List<Comentarios> comentariosList = orientacaoEntity.getComentarios();
                 comentariosList.add(comentario);
@@ -278,8 +280,6 @@ public class OrientacaoServiceImpl implements OrientacaoService {
             comentario.setAutor(comentarioEntity.getAutor());
             comentariosList.add(comentario);
         }
-        comentariosList.sort(Comparator.comparing(ComentarioDTO::getDataComentario));
-        Collections.sort(comentariosList, Collections.reverseOrder());
         comentariosDTO.setComentarios(comentariosList);
         return comentariosDTO;
     }
