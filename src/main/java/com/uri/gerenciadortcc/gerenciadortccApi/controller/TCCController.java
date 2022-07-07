@@ -73,11 +73,7 @@ public class TCCController {
     private ResponseEntity<InputStreamResource> getDocumento(@PathVariable("tccId") String tccId){
         Doc doc = docStorageService.getDocument(Long.valueOf(tccId));
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION,"attachment:filename=\""+doc.getDocName()+"\"");
-
         return ResponseEntity.ok()
-                .headers(headers)
                 .contentType(MediaType.parseMediaType(doc.getDocType()))
                 .body(new InputStreamResource(new ByteArrayInputStream(doc.getData())));
     }
